@@ -1,5 +1,5 @@
 #!/bin/zsh
-# vim: set ft=zsh fenc=utf-8 noai ts=8 et sts=4 sw=0 tw=80 nowrap :
+# vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=4 tw=80 nowrap :
 local ZGEN_SOURCE="$0:A:h"
 
 -zgputs() { printf %s\\n "$@" ;}
@@ -7,13 +7,11 @@ local ZGEN_SOURCE="$0:A:h"
 
 -zginit() { -zgputs "$*" >> "${ZGEN_INIT}" ;}
 
-
-if [[ -z "${ZGEN_DIR}" ]]; then
-    ZGEN_DIR="${HOME}/.zgen"
-fi
-
-if [[ -z "${ZGEN_INIT}" ]]; then
-    ZGEN_INIT="${ZGEN_DIR}/init.zsh"
+# Source zgen-lazy.zsh only once
+if [[ -z $ZGEN_LAZY_LOCK ]]; then
+    ZGEN_LAZY_LOCK=yes
+    source $ZGEN_SOURCE/zgen-lazy.zsh
+    unset ZGEN_LAZY_LOCK
 fi
 
 # The user can explicitly disable Zgen attempting to invoke `compinit`, or it
@@ -194,12 +192,6 @@ zgen-clone() {
 
     if [[ ! "${ZGEN_PREZTO[@]}" =~ "${cmd}" ]]; then
         ZGEN_PREZTO_LOAD+=("${params[@]}")
-    fi
-}
-
-zgen-init() {
-    if [[ -f "${ZGEN_INIT}" ]]; then
-        source "${ZGEN_INIT}"
     fi
 }
 
@@ -398,10 +390,6 @@ zgen-loadall() {
     done
 }
 
-zgen-saved() {
-    [[ -f "${ZGEN_INIT}" ]] && return 0 || return 1
-}
-
 zgen-list() {
     if [[ -f "${ZGEN_INIT}" ]]; then
         cat "${ZGEN_INIT}"
@@ -493,5 +481,9 @@ zgen() {
 }
 
 ZSH=$(-zgen-get-zsh)
-fpath=($ZGEN_SOURCE $fpath)
-zgen-init
+
+# Run initialization only once
+if [[ -z $ZGEN_LAZY_LOCK ]]; then
+    fpath=($ZGEN_SOURCE $fpath)
+    zgen-init
+fi

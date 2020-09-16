@@ -3,7 +3,11 @@
 local ZGEN_SOURCE="$0:A:h"
 
 if [[ -z "${ZGEN_DIR}" ]]; then
-    ZGEN_DIR="${HOME}/.zgen"
+    if [[ -e "${HOME}/.zgen" ]]; then
+        ZGEN_DIR="${HOME}/.zgen"
+    else
+        ZGEN_DIR="$ZGEN_SOURCE"
+    fi
 fi
 
 if [[ -z "${ZGEN_INIT}" ]]; then

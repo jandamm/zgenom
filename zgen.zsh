@@ -30,6 +30,10 @@ if [[ -z "${ZGEN_LOADED}" ]]; then
     ZGEN_LOADED=()
 fi
 
+if [[ -z "${ZGEN_ADD_PATH}" ]]; then
+    ZGEN_ADD_PATH=1
+fi
+
 if [[ -z "${ZGEN_PREZTO_OPTIONS}" ]]; then
     ZGEN_PREZTO_OPTIONS=()
 fi
@@ -255,7 +259,7 @@ zgen-save() {
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
-    if [[ -d "$ZGEN_DIR/_/bin" ]]; then
+    if [[ ${ZGEN_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/_/bin" ]]; then
         -zginit ""
         -zginit "# ### Bins"
         -zginit 'path=('"${ZGEN_DIR}"/_/bin' ${path})'
@@ -328,7 +332,7 @@ zgen-apply() {
             eval "compinit $ZGEN_COMPINIT_FLAGS"
     fi
 
-    if [[ -d "$ZGEN_DIR/_/bin" ]]; then
+    if [[ ${ZGEN_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/_/bin" ]]; then
         path=("$ZGEN_DIR/_/bin" $path)
     fi
 }
@@ -493,9 +497,8 @@ zgen-bin() {
         mkdir -p "$(-zgen-bin-dir)"
     fi
 
-    set -o nullglob
     if [[ -n $location ]]; then
-        location="${dir/location}"
+        location="${dir}/${location}"
         if [[ -f "${location}" ]]; then
             -zgen-bin "${location}" $name
             return
@@ -505,6 +508,7 @@ zgen-bin() {
     else
         location="${dir}"
     fi
+    set -o nullglob
     for file in ${location}/*; do
         if [[ -x $file ]]; then
             -zgen-bin "$file"

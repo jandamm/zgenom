@@ -204,6 +204,10 @@ zgen-reset() {
         -zgpute 'Deleting `'"${ZGEN_CUSTOM_COMPDUMP}"'` ...'
         rm -r "${ZGEN_CUSTOM_COMPDUMP}"
     fi
+    if [[ -d "$(-zgen-bin-dir)" ]]; then
+        -zgpute 'Deleting `'"$(-zgen-bin-dir)"'` ...'
+        rm -dr $(-zgen-bin-dir)
+    fi
 }
 
 zgen-update() {
@@ -249,6 +253,12 @@ zgen-save() {
         -zginit ""
         -zginit 'autoload -Uz compinit && \'
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
+    fi
+
+    if [[ -d "$ZGEN_DIR/_/bin" ]]; then
+        -zginit ""
+        -zginit "# ### Bins"
+        -zginit 'path=('"${ZGEN_DIR}"/_/bin' ${path})'
     fi
 
     # Check for file changes
@@ -316,6 +326,10 @@ zgen-apply() {
 
         autoload -Uz compinit && \
             eval "compinit $ZGEN_COMPINIT_FLAGS"
+    fi
+
+    if [[ -d "$ZGEN_DIR/_/bin" ]]; then
+        path=("$ZGEN_DIR/_/bin" $path)
     fi
 }
 
@@ -443,6 +457,61 @@ zgen-loadall() {
     done
 }
 
+-zgen-bin-dir() {
+    echo "$ZGEN_DIR/_/bin"
+}
+-zgen-bin() {
+    local file="${1}"
+    local name="${2}"
+    if [[ -z $name ]]; then
+        name=${file##*/}
+    fi
+    destination="$(-zgen-bin-dir)/$name"
+    if [[ ! -e $destination ]]; then
+        ln -s $file $destination
+    fi
+}
+
+zgen-bin() {
+    if [[ "$#" == 0 ]]; then
+        -zgpute '`load` requires at least one parameter:'
+        -zgpute '`zgen load <repo> [location] [branch] [name]`'
+        return
+    fi
+    local repo="${1}"
+    local location="${2%/}"
+    local branch="${3:-master}"
+    local name="${4}"
+    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+
+    # clone repo if not present
+    if [[ ! -d "${dir}" ]]; then
+        zgen-clone "${repo}" "${branch}"
+    fi
+
+    if [[ ! -d "$(-zgen-bin-dir)" ]]; then
+        mkdir -p "$(-zgen-bin-dir)"
+    fi
+
+    set -o nullglob
+    if [[ -n $location ]]; then
+        location="${dir/location}"
+        if [[ -f "${location}" ]]; then
+            -zgen-bin "${location}" $name
+            return
+        fi
+    elif [[ -d "${dir}/bin" ]]; then
+        location="${dir}/bin"
+    else
+        location="${dir}"
+    fi
+    for file in ${location}/*; do
+        if [[ -x $file ]]; then
+            -zgen-bin "$file"
+        fi
+    done
+}
+
 zgen-list() {
     if [[ -f "${ZGEN_INIT}" ]]; then
         cat "${ZGEN_INIT}"
@@ -519,7 +588,7 @@ zgen() {
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgen [command | instruction] [options]`'
         -zgputs "    commands: list, saved, reset, clone, update, selfupdate, compile"
-        -zgputs "    instructions: load, oh-my-zsh, pmodule, prezto, save, apply"
+        -zgputs "    instructions: load, bin, oh-my-zsh, pmodule, prezto, save, apply"
         return 1
     fi
 

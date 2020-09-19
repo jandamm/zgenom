@@ -57,7 +57,7 @@ if [[ -z "${ZGEN_PREZTO_LOAD_DEFAULT}" ]]; then
 fi
 
 if [[ -z "${ZGEN_OH_MY_ZSH_REPO}" ]]; then
-    ZGEN_OH_MY_ZSH_REPO=robbyrussell
+    ZGEN_OH_MY_ZSH_REPO=ohmyzsh/ohmyzsh
 fi
 
 if [[ "${ZGEN_OH_MY_ZSH_REPO}" != */* ]]; then
@@ -169,7 +169,7 @@ zgen-clone() {
             # The slash is to make globs like */plgname match.
             ZGEN_LOADED_MAP[${file_}]="/${${file_:h}:t}"
         else
-            if [[ "${dir}" = *robbyrussell* ]]; then
+            if [[ "${dir}" = *ohmyzsh* ]]; then
                 # For Oh My Zsh, include the file name in
                 # the mapped plugin name. Note: it's the
                 # outer-scope $file, not $file_

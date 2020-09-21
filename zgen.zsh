@@ -513,7 +513,9 @@ zgen-bin() {
 }
 
 zgen-list() {
-    if [[ -f "${ZGEN_INIT}" ]]; then
+    if [[ $1 = 'bin' ]]; then
+        ls $(-zgen-bin-dir)
+    elif [[ -f "${ZGEN_INIT}" ]]; then
         cat "${ZGEN_INIT}"
     else
         -zgpute '`init.zsh` missing, please use `zgen save` and then restart your shell.'

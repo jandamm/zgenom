@@ -215,7 +215,7 @@ zgen-reset() {
 }
 
 zgen-update() {
-    setopt localoptions extended_glob
+    setopt localoptions extended_glob nullglob
     for repo in "${ZGEN_DIR}"/(^.git|^_)/*; do
         -zgpute "Updating '${repo}' ..."
         (cd "${repo}" \

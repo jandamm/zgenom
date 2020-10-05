@@ -129,13 +129,24 @@ fi
 
 zgen-clone() {
     local repo="${1}"
+    local submodules
+    if [[ $2 = '--no-submodules' ]]; then
+        submodules=$2
+        shift
+    else
+        submodules=$3
+    fi
     local branch="${2:-master}"
     local url="$(-zgen-get-clone-url ${repo})"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
     if [[ ! -d "${dir}" ]]; then
         mkdir -p "${dir}"
-        git clone --depth=1 --recursive -b "${branch}" "${url}" "${dir}"
+        if [[ $submodules = '--no-submodules' ]]; then
+            git clone --depth=1 -b "${branch}" "${url}" "${dir}"
+        else
+            git clone --depth=1 --recursive -b "${branch}" "${url}" "${dir}"
+        fi
     fi
 }
 
@@ -220,7 +231,7 @@ zgen-update() {
         -zgpute "Updating '${repo}' ..."
         (cd "${repo}" \
             && git pull \
-            && git submodule update --init --recursive)
+            && git submodule update --recursive)
     done
     zgen-reset
 }

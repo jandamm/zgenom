@@ -29,6 +29,22 @@ You can use `zgen list bin` to check for such cases.
 zgen bin 'clvv/fasd' fasd master fast
 ```
 
+## Differences to zgen
+
+New features:
+
+- Compiling your sourced scripts.
+- Add `zgen compile` in case you want to recursively compile your dotfiles (manually).
+- Add `zgen bin` to add an executable to your `$PATH`.
+- Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
+- The default `$ZGEN_DIR` is where you cloned `zgenom` to (except when you have `~/.zgen` for backwards compatibility).
+- Allow cloning without submodules `zgen clone [repo] --no-submodules`.
+
+Bugfixes/maintenance:
+
+- compinit with custom flags wasn't working properly.
+- Update to `ohmyzsh/ohmyzsh`.
+
 ## zgen
 
 A lightweight plugin manager for Zsh inspired by [Antigen](https://github.com/zsh-users/antigen). Keep your `.zshrc` clean and simple.

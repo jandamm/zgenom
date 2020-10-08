@@ -5,24 +5,57 @@ A lightweight plugin manager for Zsh based on
 `zgen`. Providing more features and bugfixes while being fully backwards
 compatible.
 
-### Migration from zgen
+## Migration from zgen
 
 To get started you just have to clone this repo instead of zgen or you change remotes.
 
-This will take care that all files including the compdump are compiled after you run `zgen reset` once.
+This will take care that all files including the compdump are compiled after
+you run `zgen reset` once. Besides this automatic compiling you can use zgenom
+to compile your dotfiles as well. (see below)
 
 To enable lazy loading change `source "${HOME}/.zgen/zgen.zsh"` to `source "${HOME}/.zgen/zgenom.zsh"`.
 
-Among bugfixes this fork also enables sourcing bins:
+## Differences to zgen
+
+New features:
+
+- Compiling your sourced scripts.
+- Add `zgen compile` in case you want to recursively compile your dotfiles (manually).
+- Add `zgen bin` to add an executable to your `$PATH`.
+- Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
+- The default `$ZGEN_DIR` is where you cloned `zgenom` to (except when you have `~/.zgen` for backwards compatibility).
+- Allow cloning without submodules `zgen clone [repo] --no-submodules`.
+
+Bugfixes/maintenance:
+
+- compinit with custom flags wasn't working properly.
+- Update to `ohmyzsh/ohmyzsh`.
+
+### zgen compile
+
+```zsh
+zgen compile .zshrc
+zgen compile ~/.zsh
+zgen compile $ZDOTDIR
+```
+
+The first will just compile your `.zshrc`. The second one will compile every
+zsh file it can recursively find in `~/.zsh`. You might not want to add any of
+these lines to your `.zsrhc` but run them manually or automatically in the
+background.
+
+### zgen bin
 
 ```zsh
 zgen bin 'clvv/fasd'
 ```
-By default this will look in `./bin`. If this folder does not exist it will look in `.`.
-If the executable isn't in these folders you can specify either a folder or a file.
-If you don't specify anything at all or specify a folder all executables in this path will be used.
-This may lead to unwanted side-effects so it's recommended that you specify the files you need.
-You can use `zgen list bin` to check for such cases.
+
+By default this will look in `./bin`. If this folder does not exist it will
+look in `.`. If the executable isn't in these folders you can specify either a
+folder or a file. If you don't specify anything at all or specify a folder all
+executables in this path will be used. This may lead to unwanted side-effects
+so it's recommended that you specify the files you need. You can use `zgen list
+bin` to check for such cases.
 
 ```zsh
 # Add 'fasd' to the path and rename it to 'fast'

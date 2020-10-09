@@ -378,10 +378,14 @@ zgen-compile() {
                 continue
 
             # Check for shebang if not:
+            # - zsh startup file
             # - *.zsh
             # - *.sh
             # - zcompdump*
-            elif [[ $file != *.zsh ]] && [[ $file != *.sh ]] && [[ $file != *zcompdump* ]]; then
+            elif [[ $file != *.zsh ]] \
+                && [[ $file != *.sh ]] \
+                && [[ $file != *zcompdump* ]] \
+                && [[ ! $file =~ '\.z(shenv|profile|shrc|login|logout)$' ]]; then
                 read -r firstline < $file
                 if [[ ! $firstline =~ '^#!.*zsh' ]] 2>/dev/null; then
                     continue

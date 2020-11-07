@@ -359,7 +359,9 @@ zgen-apply() {
 
 -zgen-compile() {
     local file=$1
-    [ ! $file.zwc -nt $file ] && zcompile $file
+    if [ ! $file.zwc -nt $file ]; then
+        zcompile $file
+    fi
 }
 
 zgen-compile() {

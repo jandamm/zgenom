@@ -25,6 +25,7 @@ New features:
 - Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
 - The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom` to (except when you have `~/.zgen` for backwards compatibility).
 - Allow cloning without submodules `zgen clone [repo] --no-submodules`.
+- Full support for non `master` branches (e.g. `main`). This includes following a new default branch.
 
 Bugfixes/maintenance:
 
@@ -61,6 +62,25 @@ bin` to check for such cases.
 # Add 'fasd' to the path and rename it to 'fast'
 zgen bin 'clvv/fasd' fasd master fast
 ```
+
+### Using a default branch
+
+If you don't specify a branch the remotes default branch will be used. (The one
+you see when you open the github page for a project). When the default branch
+is used zgenom will try to follow this branch. When you add a plugin with the
+default branch `master` and the maintainer decides to use `main` instead zgenom
+will switch from `master` to `main` for you.
+
+If you have to specify a branch but still want this behavior you can use `___`
+instead of a branch name.
+
+When you are currently using zgen and have plugins without a branch specified
+you'll be asked (on `zgen load`) if you want to migrate the old plugin or clone
+it freshly.
+
+**Be aware that this feature will delete the local branch when the head changes.**
+So don't use it if you plan to tamper with clone locally. If you just want to use
+plugins this won't affect you.
 
 ## zgen
 

@@ -91,7 +91,7 @@ fi
 
 -zgen-get-clone-dir() {
     local repo="${1}"
-    local branch="${2:-master}"
+    local branch="${2:-___}"
 
     if [[ -e "${repo}/.git" ]]; then
         -zgputs "${ZGEN_DIR}/local/${repo:t}-${branch}"
@@ -129,23 +129,40 @@ fi
 
 zgen-clone() {
     local repo="${1}"
-    local submodules
+    local submodules='--recursive'
     if [[ $2 = '--no-submodules' ]]; then
-        submodules=$2
+        submodules=''
         shift
-    else
-        submodules=$3
+    elif [[ $3 = '--no-submodules' ]]; then
+        submodules=''
     fi
-    local branch="${2:-master}"
+    local branch="${2}"
     local url="$(-zgen-get-clone-url ${repo})"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
-    if [[ ! -d "${dir}" ]]; then
-        mkdir -p "${dir}"
-        if [[ $submodules = '--no-submodules' ]]; then
-            git clone --depth=1 -b "${branch}" "${url}" "${dir}"
+    if [[ -d "${dir}" ]]; then
+        return # Everything is fine!
+    elif [[ -z "$branch" ]] && [[ -d "${dir%-___}-master" ]]; then
+        if [[ -z "$ZGENOM_MIGRATE_ALL" ]]; then
+            -zgputs "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."
+            -zgputs "Do you want to migrate '${${dir#$ZGEN_DIR/}%-___}-master' to use the default branch?"
+            -zgputs "If you say no, the repo will be cloned again. If you say quit, zgen will be stopped."
+            read "answer?(y/n/a/q): "
         else
-            git clone --depth=1 --recursive -b "${branch}" "${url}" "${dir}"
+            answer='y'
+        fi
+        case $answer in
+            [Yy]) command mv "${dir%-___}-master" "$dir" ;;
+            [Aa]) ZGENOM_MIGRATE_ALL="Y" && command mv "${dir%-___}-master" "$dir" ;;
+            [Nn]) zgen-clone "$repo" '___' "${submodules:---no-submodules}" ;;
+            *)    kill -s SIGINT $! ;;
+        esac
+    else
+        mkdir -p "${dir}"
+        if [[ -n "$branch" ]] && [[ ! "$branch" = '___' ]]; then
+            eval "git clone --depth=1 $submodules -b $branch $url $dir"
+        else
+            eval "git clone --depth=1 $submodules $url $dir"
         fi
     fi
 }
@@ -225,12 +242,64 @@ zgen-reset() {
     fi
 }
 
+-zgen-git-fetch-head() {
+    local result
+    local branch
+    if ! result=$(git remote set-head origin --auto 2>&1); then
+        branch="${result#*refs/remotes/origin/}"
+        [[ $result = $branch ]] && return 1
+        branch="${branch% *}"
+        git config remote.origin.fetch +refs/heads/"$branch":refs/remotes/origin/"$branch"  # Update config to point to new head
+        git fetch --depth=1 origin                                                          # Fetch the new head
+        git remote set-head origin --auto &>/dev/null                                       # Retry setting the new head
+        return $?
+    fi
+}
+
+-zgen-git-pull() {
+    if [[ ! "$repo" =~ '-___$' ]]; then
+        git pull --ff-only
+    else
+        local head
+        if -zgen-git-fetch-head && head=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null); then
+            local branch="${head#refs/remotes/origin/}"
+            if [[ "$branch" = "$head" ]]; then
+                -zgen-git-pull-fatal
+                return
+            fi
+
+            local curbranch="$(git rev-parse --abbrev-ref HEAD)"
+            if [[ "$branch" = "$curbranch" ]]; then
+                # Current head is current branch.
+                git pull --ff-only
+            else
+                -zgputs
+                -zgputs "New default branch: '$branch'."
+                git branch --quiet -D "$branch" &>/dev/null             # delete existing new head
+                git checkout --quiet -b "$branch" "$head"               # checkout new head from origin
+                git branch --quiet -D "$curbranch"                      # delete old local branch
+                git branch --quiet --remotes -d "origin/$curbranch"     # delete old origin branch
+            fi
+        else
+            -zgen-git-pull-fatal
+        fi
+    fi
+}
+
+-zgen-git-pull-fatal() {
+    -zgpute
+    -zgpute "Could not find default branch."
+    -zgpute "Please delete the repos folder and let zgenom clone it again."
+    -zgpute
+}
+
 zgen-update() {
     setopt localoptions extended_glob nullglob
-    for repo in "${ZGEN_DIR}"/(^.git|^_)/*; do
+    for repo in "${ZGEN_DIR}"/(^.git)/*; do
+        [[ "${repo}" =~ $ZGEN_DIR/_/* ]] && continue
         -zgpute "Updating '${repo}' ..."
         (cd "${repo}" \
-            && git pull --ff-only \
+            && -zgen-git-pull \
             && git submodule update --recursive)
     done
     zgen-reset
@@ -408,7 +477,7 @@ zgen-load() {
     else
         local repo="${1}"
         local file="${2}"
-        local branch="${3:-master}"
+        local branch="${3}"
         local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
         local location="${dir}/${file}"
         location=${location%/}
@@ -501,7 +570,7 @@ zgen-bin() {
     fi
     local repo="${1}"
     local location="${2%/}"
-    local branch="${3:-master}"
+    local branch="${3}"
     local name="${4}"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
@@ -593,7 +662,7 @@ zgen-prezto() {
 
 zgen-pmodule() {
     local repo="${1}"
-    local branch="${2:-master}"
+    local branch="${2}"
 
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 

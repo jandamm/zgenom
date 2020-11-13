@@ -6,11 +6,7 @@ if [[ -z "${ZGEN_DIR}" ]]; then
     if [[ -e "${HOME}/.zgen" ]]; then
         ZGEN_DIR="${HOME}/.zgen"
     else
-        if [[ -f ~/.zgenom-separate-clones ]]; then
-            ZGEN_DIR="${HOME}/.zgenom"
-        else
-            ZGEN_DIR="$ZGEN_SOURCE"
-        fi
+        ZGEN_DIR="$ZGEN_SOURCE/sources"
     fi
 fi
 

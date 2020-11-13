@@ -23,7 +23,7 @@ New features:
 - Add `zgen compile` in case you want to recursively compile your dotfiles (manually).
 - Add `zgen bin` to add an executable to your `$PATH`.
 - Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
-- The default `$ZGEN_DIR` is where you cloned `zgenom` to (except when you have `~/.zgen` for backwards compatibility).
+- The default `$ZGEN_DIR` is where you cloned `zgenom` to (except when you have `~/.zgen` for backwards compatibility). Create a `~/.zgenom-separate-clones` file to have the clones created in `~/.zgenom`.
 - Allow cloning without submodules `zgen clone [repo] --no-submodules`.
 
 Bugfixes/maintenance:

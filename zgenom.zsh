@@ -6,7 +6,7 @@ if [[ -z "${ZGEN_DIR}" ]]; then
     if [[ -e "${HOME}/.zgen" ]]; then
         ZGEN_DIR="${HOME}/.zgen"
     else
-        ZGEN_DIR="$ZGEN_SOURCE"
+        ZGEN_DIR="$ZGEN_SOURCE/sources"
     fi
 fi
 

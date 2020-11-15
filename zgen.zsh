@@ -230,7 +230,7 @@ zgen-update() {
     for repo in "${ZGEN_DIR}"/(^.git|^_)/*; do
         -zgpute "Updating '${repo}' ..."
         (cd "${repo}" \
-            && git pull \
+            && git pull --ff-only \
             && git submodule update --recursive)
     done
     zgen-reset

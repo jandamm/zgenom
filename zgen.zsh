@@ -62,20 +62,12 @@ if [[ "${ZGEN_OH_MY_ZSH_REPO}" != */* ]]; then
     ZGEN_OH_MY_ZSH_REPO="${ZGEN_OH_MY_ZSH_REPO}/oh-my-zsh"
 fi
 
-if [[ -z "${ZGEN_OH_MY_ZSH_BRANCH}" ]]; then
-    ZGEN_OH_MY_ZSH_BRANCH=master
-fi
-
 if [[ -z "${ZGEN_PREZTO_REPO}" ]]; then
     ZGEN_PREZTO_REPO=sorin-ionescu
 fi
 
 if [[ "${ZGEN_PREZTO_REPO}" != */* ]]; then
     ZGEN_PREZTO_REPO="${ZGEN_PREZTO_REPO}/prezto"
-fi
-
-if [[ -z "${ZGEN_PREZTO_BRANCH}" ]]; then
-    ZGEN_PREZTO_BRANCH=master
 fi
 
 -zgen-encode-url () {
@@ -628,7 +620,7 @@ zgen-oh-my-zsh() {
     local repo="$ZGEN_OH_MY_ZSH_REPO"
     local file="${1:-oh-my-zsh.sh}"
 
-    zgen-load "${repo}" "${file}"
+    zgen-load "${repo}" "${file}" "$ZGEN_OH_MY_ZSH_BRANCH"
 }
 
 zgen-prezto() {
@@ -638,7 +630,7 @@ zgen-prezto() {
     # load prezto itself
     if [[ $# == 0 ]]; then
         ZGEN_USE_PREZTO=1
-        zgen-load "${repo}" "${file}"
+        zgen-load "${repo}" "${file}" "${ZGEN_PREZTO_BRANCH}"
         if [[ ${ZGEN_PREZTO_LOAD_DEFAULT} != 0 ]]; then
             -zgen-prezto-load "'environment' 'terminal' 'editor' 'history' 'directory' 'spectrum' 'utility' 'completion' 'prompt'"
         fi

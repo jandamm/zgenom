@@ -59,6 +59,7 @@ if [[ -z "${ZGEN_OH_MY_ZSH_REPO}" ]]; then
 fi
 
 if [[ "${ZGEN_OH_MY_ZSH_REPO}" != */* ]]; then
+    # Even though the default repo is now ohmyzsh most forks still use oh-my-zsh
     ZGEN_OH_MY_ZSH_REPO="${ZGEN_OH_MY_ZSH_REPO}/oh-my-zsh"
 fi
 
@@ -500,7 +501,7 @@ zgen-load() {
     elif [[ -f "${location}.zsh.plugin" ]]; then
         -zgen-source "${location}.zsh.plugin"
 
-    # Classic oh-my-zsh plugins have foo.plugin.zsh
+    # Classic ohmyzsh plugins have foo.plugin.zsh
     elif -zgen-path-contains "${location}" ".plugin.zsh" ; then
         for script (${location}/*\.plugin\.zsh(N)) -zgen-source "${script}"
 
@@ -616,7 +617,10 @@ zgen-selfupdate() {
     fi
 }
 
-zgen-oh-my-zsh() {
+# Backwards compatibilty for zgen
+zgen-oh-my-zsh() { zgen-ohmyzsh $@ }
+
+zgen-ohmyzsh() {
     local repo="$ZGEN_OH_MY_ZSH_REPO"
     local file="${1:-oh-my-zsh.sh}"
 
@@ -672,7 +676,7 @@ zgen() {
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgen [command | instruction] [options]`'
         -zgputs "    commands: list, saved, reset, clone, update, selfupdate, compile"
-        -zgputs "    instructions: load, bin, oh-my-zsh, pmodule, prezto, save, apply"
+        -zgputs "    instructions: load, bin, ohmyzsh, pmodule, prezto, save, apply"
         return 1
     fi
 

@@ -21,7 +21,7 @@ _zgen_commands=(
     "list:print init.zsh"
     "load:clone and load plugin"
     "bin:clone and add files to PATH"
-    "oh-my-zsh:load oh-my-zsh base"
+    "ohmyzsh:load ohmyzsh base"
     "prezto:load prezto base"
     "reset:delete the init.zsh script"
     "save:check for init.zsh script"

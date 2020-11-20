@@ -10,7 +10,7 @@ local ZGEN_SOURCE="$0:A:h"
 # Source zgen-lazy.zsh only once
 if [[ -z $ZGEN_LAZY_LOCK ]]; then
     ZGEN_LAZY_LOCK=yes
-    source $ZGEN_SOURCE/zgen-lazy.zsh
+    source $ZGEN_SOURCE/zgenom.zsh
     unset ZGEN_LAZY_LOCK
 fi
 
@@ -609,7 +609,7 @@ zgen-selfupdate() {
     if [[ -e "${ZGEN_SOURCE}/.git" ]]; then
         (cd "${ZGEN_SOURCE}" \
             && git pull) \
-            && zgen reset
+            && zgen-reset
     else
         -zgpute "Not running from a git repository; cannot automatically update."
         return 1

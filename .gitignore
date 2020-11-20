@@ -1,7 +1,2 @@
-*
-!.gitignore
-!LICENSE
-!README.md
-!_zgen
-!zgen.zsh
-!zgenom.zsh
+sources
+.DS_Store

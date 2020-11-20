@@ -25,9 +25,9 @@ _zgen_commands=(
     "prezto:load prezto base"
     "reset:delete the init.zsh script"
     "save:check for init.zsh script"
-    "selfupdate:update zgen framework from repository"
+    "selfupdate:update zgenom framework from repository"
     "update:update all repositories and remove the init script"
 )
 
-_describe -t commands "zgen subcommand" _zgen_commands
+_describe -t commands "zgenom subcommand" _zgen_commands
 return 0

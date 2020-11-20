@@ -25,19 +25,23 @@ zgen-init() {
 }
 
 # Run initialization only once
-if [[ -z $ZGEN_LAZY_LOCK ]]; then
-    zgen() {
+if [[ -z $ZGENOM_LAZY_LOCK ]]; then
+    zgenom() {
         case $1 in
             saved) zgen-saved;;
             init) zgen-init;;
             *)
-                ZGEN_LAZY_LOCK=yes
+                ZGENOM_LAZY_LOCK=yes
                 source "${ZGEN_SOURCE}/zgen.zsh"
-                unset ZGEN_LAZY_LOCK
-                zgen $@
+                unset ZGENOM_LAZY_LOCK
+                zgenom $@
                 ;;
         esac
     }
     fpath=($ZGEN_SOURCE $fpath)
     zgen-init
 fi
+
+# Creating an alias wouldn't work when scripting like this:
+# zsh -c ".../zgen.zsh && zgen update"
+zgen() { zgenom $@ }

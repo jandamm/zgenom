@@ -229,7 +229,7 @@ zgen-reset() {
         -zgpute 'Deleting `'"${ZGEN_CUSTOM_COMPDUMP}"'` ...'
         rm -r "${ZGEN_CUSTOM_COMPDUMP}"
     fi
-    if [[ -d "$(-zgen-bin-dir)" ]]; then
+    if [[ -d $(-zgen-bin-dir) ]]; then
         -zgpute 'Deleting `'"$(-zgen-bin-dir)"'` ...'
         rm -dr $(-zgen-bin-dir)
     fi
@@ -332,10 +332,10 @@ zgen-save() {
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
-    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/_/bin" ]]; then
+    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d $(-zgen-bin-dir) ]]; then
         -zginit ""
         -zginit "# ### Bins"
-        -zginit 'path=('"${ZGEN_DIR}"/_/bin' ${path})'
+        -zginit 'path=('$(-zgen-bin-dir)' ${path})'
     fi
 
     # Check for file changes
@@ -405,8 +405,8 @@ zgen-apply() {
             eval "compinit $ZGEN_COMPINIT_FLAGS"
     fi
 
-    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/_/bin" ]]; then
-        path=("$ZGEN_DIR/_/bin" $path)
+    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d $(-zgen-bin-dir) ]]; then
+        path=($(-zgen-bin-dir) $path)
     fi
 }
 
@@ -541,7 +541,7 @@ zgen-loadall() {
 }
 
 -zgen-bin-dir() {
-    echo "$ZGEN_DIR/_/bin"
+    echo "$ZGEN_SOURCE/bin"
 }
 -zgen-bin() {
     local file="${1}"
@@ -572,8 +572,8 @@ zgen-bin() {
         zgen-clone "${repo}" "${branch}"
     fi
 
-    if [[ ! -d "$(-zgen-bin-dir)" ]]; then
-        mkdir -p "$(-zgen-bin-dir)"
+    if [[ ! -d $(-zgen-bin-dir) ]]; then
+        mkdir -p $(-zgen-bin-dir)
     fi
 
     if [[ -n $location ]]; then

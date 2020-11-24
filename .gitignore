@@ -1,2 +1,4 @@
-sources
 .DS_Store
+*.zwc
+tags
+sources

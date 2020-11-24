@@ -258,7 +258,7 @@ zgenom selfupdate
 
 You can automate the process of running `zgenom reset` by specifying a list of
 files to `ZGEN_RESET_ON_CHANGE`. These files will be checked and if a change is
-detected `zgenom resetz` is called.
+detected `zgenom reset` is called.
 
 ```zsh
 ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)

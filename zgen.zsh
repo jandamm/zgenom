@@ -378,9 +378,10 @@ zgen-save() {
     zgen-apply
 
     -zgpute "Compiling files ..."
-    zgen-compile $ZGEN_DIR
-    if [[ $ZGEN_DIR != $ZGEN_SOURCE ]]; then
-        zgen-compile $ZGEN_SOURCE
+    zgen-compile $ZGEN_SOURCE
+    if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then
+        # Compile ZGEN_DIR if not subdirectory of ZGEN_SOURCE
+        zgen-compile $ZGEN_DIR
     fi
     if [[ -n $ZGEN_CUSTOM_COMPDUMP ]]; then
         -zgen-compile $ZGEN_CUSTOM_COMPDUMP

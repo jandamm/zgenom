@@ -387,7 +387,7 @@ zgen-save() {
     else
         set -o nullglob
         for compdump in $HOME/.zcompdump*; do
-            if [ $compdump = *.zwc ]; then
+            if [[ $compdump = *.zwc ]] || [[ ! -r $compdump ]]; then
                 continue
             fi
             -zgen-compile $compdump

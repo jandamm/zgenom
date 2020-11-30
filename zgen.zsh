@@ -422,8 +422,8 @@ zgen-apply() {
 
 -zgen-compile() {
     local file=$1
-    if [ ! $file.zwc -nt $file ]; then
-        zcompile $file
+    if [ ! $file.zwc -nt $file ] && [[ -r $file ]]; then
+        zcompile -U $file
     fi
 }
 

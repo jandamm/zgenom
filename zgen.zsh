@@ -166,6 +166,7 @@ zgen-clone() {
     # Add the directory to ZGEN_COMPLETIONS array if not present
     if [[ ! "${ZGEN_COMPLETIONS[@]}" =~ ${completion_path} ]]; then
         ZGEN_COMPLETIONS+=("${completion_path}")
+        fpath=("${completion_path}" $fpath)
     fi
 }
 
@@ -174,11 +175,12 @@ zgen-clone() {
 
     if [[ ! "${ZGEN_LOADED[@]}" =~ "${file}" ]]; then
         ZGEN_LOADED+=("${file}")
-        source "${file}"
 
         completion_path="${file:h}"
 
         -zgen-add-to-fpath "${completion_path}"
+
+        source "${file}"
     fi
 }
 
@@ -314,18 +316,19 @@ zgen-save() {
         done
     fi
 
+    # Set up fpath, load completions
+    # NOTE: This *intentionally* doesn't use ${ZGEN_COMPINIT_FLAGS}; the only
+    #       available flags are meaningless in the presence of `-C`.
+    -zginit ""
+    -zginit "# ### Plugins & Completions"
+    -zginit 'fpath=('"${(@qOa)ZGEN_COMPLETIONS}"' ${fpath})'
+
     -zginit ""
     -zginit "# ### General modules"
     for file in "${ZGEN_LOADED[@]}"; do
         -zginit 'source "'"${(q)file}"\"
     done
 
-    # Set up fpath, load completions
-    # NOTE: This *intentionally* doesn't use ${ZGEN_COMPINIT_FLAGS}; the only
-    #       available flags are meaningless in the presence of `-C`.
-    -zginit ""
-    -zginit "# ### Plugins & Completions"
-    -zginit 'fpath=('"${(@q)ZGEN_COMPLETIONS}"' ${fpath})'
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zginit ""
         -zginit 'autoload -Uz compinit && \'
@@ -397,8 +400,6 @@ zgen-save() {
 }
 
 zgen-apply() {
-    fpath=(${(q)ZGEN_COMPLETIONS[@]} ${fpath})
-
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zgpute "Initializing completions ..."
 

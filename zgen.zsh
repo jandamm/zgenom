@@ -693,9 +693,3 @@ zgenom() {
 }
 
 ZSH=$(-zgen-get-zsh)
-
-# Run initialization only once
-if [[ -z $ZGENOM_LAZY_LOCK ]]; then
-    fpath=($ZGEN_SOURCE $fpath)
-    zgen-init
-fi

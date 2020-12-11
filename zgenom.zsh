@@ -38,9 +38,10 @@ if [[ -z $ZGENOM_LAZY_LOCK ]]; then
                 ;;
         esac
     }
-    fpath=($ZGEN_SOURCE $fpath)
-    zgen-init
 fi
+
+fpath=($ZGEN_SOURCE $fpath)
+zgen-init
 
 # Creating an alias wouldn't work when scripting like this:
 # zsh -c ".../zgen.zsh && zgen update"

@@ -42,10 +42,6 @@ if [[ -z "${zsh_loaded_plugins}" ]]; then
     typeset -ga zsh_loaded_plugins
 fi
 
-if [[ -z "${ZGENOM_ADD_PATH}" ]]; then
-    ZGENOM_ADD_PATH=1
-fi
-
 if [[ -z "${ZGEN_PREZTO_OPTIONS}" ]]; then
     ZGEN_PREZTO_OPTIONS=()
 fi
@@ -367,7 +363,7 @@ zgen-save() {
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
-    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d $(-zgen-bin-dir) ]]; then
+    if [[ -d $(-zgen-bin-dir) ]]; then
         -zginit ""
         -zginit "# ### Bins"
         -zginit 'path=('$(-zgen-bin-dir)' ${path})'

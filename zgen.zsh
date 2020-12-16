@@ -30,6 +30,14 @@ if [[ -z "${ZGEN_LOADED}" ]]; then
     ZGEN_LOADED=()
 fi
 
+if [[ -z "${ZGENOM_LOADED}" ]]; then
+    ZGENOM_LOADED=()
+fi
+
+if [[ -z "${zsh_loaded_plugins}" ]]; then
+    typeset -ga zsh_loaded_plugins
+fi
+
 if [[ -z "${ZGENOM_ADD_PATH}" ]]; then
     ZGENOM_ADD_PATH=1
 fi
@@ -171,16 +179,29 @@ zgen-clone() {
 }
 
 -zgen-source() {
-    local file="${1}"
+    local source_file="${1}"
+    local repo_id
 
-    if [[ ! "${ZGEN_LOADED[@]}" =~ "${file}" ]]; then
-        ZGEN_LOADED+=("${file}")
+    if [[ ! "${ZGEN_LOADED[@]}" =~ "${source_file}" ]]; then
+        if [[ -z "${repo}" ]]; then
+            repo_id="/${${source_file:h}:t}"
+        elif [[ "${dir}" = *ohmyzsh* ]] || [[ "${dir}" = *oh-my-zsh* ]]; then
+            repo_id="${repo}/${file}"
+        else
+            repo_id="${repo}"
+        fi
 
-        completion_path="${file:h}"
+        ZGEN_LOADED+=("${source_file}")
+        ZGENOM_LOADED+=("${repo_id}")
 
-        -zgen-add-to-fpath "${completion_path}"
+        if [[ -d "$dir/functions" ]]; then
+            -zgen-add-to-fpath "$dir/functions"
+        else
+            -zgen-add-to-fpath "${source_file:h}"
+        fi
 
-        source "${file}"
+        zsh_loaded_plugins+=( "$repo_id" )
+        ZERO="${source_file}" source "${source_file}"
     fi
 }
 
@@ -323,10 +344,14 @@ zgen-save() {
     -zginit "# ### Plugins & Completions"
     -zginit 'fpath=('"${(@qOa)ZGEN_COMPLETIONS}"' ${fpath})'
 
+    local file
     -zginit ""
     -zginit "# ### General modules"
-    for file in "${ZGEN_LOADED[@]}"; do
-        -zginit 'source "'"${(q)file}"\"
+    -zginit "typeset -ga zsh_loaded_plugins"
+    for i in {1.."${#ZGEN_LOADED}"}; do
+        file="${ZGEN_LOADED[$i]}"
+        -zginit "zsh_loaded_plugins+=( ${(qqq)ZGENOM_LOADED[$i]} )"
+        -zginit "ZERO=${(qqq)file} source ${(qqq)file}"
     done
 
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then

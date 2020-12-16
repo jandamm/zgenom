@@ -277,6 +277,20 @@ zsh file it can recursively find in `~/.zsh`. You might not want to add any of
 these lines to your `.zsrhc` but run them manually or automatically in the
 background.
 
+## [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html)
+
+The Zsh Plugin Standard describes how a plugin for zsh should be written and
+what the plugin manager should do to support a plugin.
+
+Zgenom does support most paragraphs of this standard. (1-3 & 7-9 as of this writing).
+The unsupported paragraphs are all related to unloading (which isn't currently
+supported) and a hook for plugins that the plugin manager should call on
+updates (you probably shouldn't use zgenom if your plugin requires this).
+
+**Note:** *Paragraph 3* says to add every `./bin` folder found in a plugin.
+I personally wouldn't want this so this is off by default. Please set
+`ZGENOM_AUTO_ADD_BIN=1` before sourcing `zgenom.zsh` to enable this paragraph.
+
 ## Notes
 
 While this README uses `zgenom` and `ohmyzsh` the old versions `zgen` and
@@ -307,6 +321,7 @@ be disabled if you've already called `compinit` yourself before sourcing
   a new default branch.
 - compinit with custom flags wasn't working properly.
 - Update to `ohmyzsh/ohmyzsh`.
+- Implement the [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html).
 
 ## Example .zshrc
 

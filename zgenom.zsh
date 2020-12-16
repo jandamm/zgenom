@@ -2,10 +2,6 @@
 # vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=4 tw=80 nowrap :
 local ZGEN_SOURCE="$0:A:h"
 
-# Zsh Plugin Standard
-export PMSPEC=0fiPs
-export ZPFX="$ZGEN_SOURCE/polaris"
-
 if [[ -z "${ZGEN_DIR}" ]]; then
     if [[ -e "${HOME}/.zgen" ]]; then
         ZGEN_DIR="${HOME}/.zgen"

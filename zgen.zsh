@@ -8,7 +8,12 @@ local ZGEN_SOURCE="$0:A:h"
 -zginit() { -zgputs "$*" >> "${ZGEN_INIT}" ;}
 
 # Zsh Plugin Standard
-export PMSPEC=0fiPs
+if [[ $ZGENOM_AUTO_ADD_BIN -eq 1 ]]; then
+    export PMSPEC=0fbiPs
+else
+    export PMSPEC=0fiPs
+    ZGENOM_AUTO_ADD_BIN=0
+fi
 export ZPFX="$ZGEN_SOURCE/polaris"
 
 # Source zgen-lazy.zsh only once
@@ -551,6 +556,11 @@ zgen-load() {
       else
         -zgpute "Failed to load ${dir:-$location}"
       fi
+      return
+    fi
+
+    if [[ $ZGENOM_AUTO_ADD_BIN -eq 1 ]] && [[ -d "$dir/bin" ]]; then
+        zgen-bin "$repo" bin "$branch"
     fi
 }
 

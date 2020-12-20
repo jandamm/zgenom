@@ -254,6 +254,12 @@ Pulls updates on every plugin repository and removes the init script.
 zgenom selfupdate
 ```
 
+#### Clean zgenom plugins
+
+```zsh
+zgenom clean
+```
+
 #### Watch files for modifications
 
 You can automate the process of running `zgenom reset` by specifying a list of
@@ -322,6 +328,7 @@ be disabled if you've already called `compinit` yourself before sourcing
 - compinit with custom flags wasn't working properly.
 - Update to `ohmyzsh/ohmyzsh`.
 - Implement the [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html).
+- Add `zgenom clear` to remove all unused plugins.
 
 ## Example .zshrc
 

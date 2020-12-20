@@ -43,6 +43,10 @@ if [[ -z "${ZGENOM_LOADED}" ]]; then
     ZGENOM_LOADED=()
 fi
 
+if [[ -z "${ZGENOM_PLUGINS}" ]]; then
+    ZGENOM_PLUGINS=()
+fi
+
 if [[ -z "${zsh_loaded_plugins}" ]]; then
     typeset -ga zsh_loaded_plugins
 fi
@@ -145,6 +149,8 @@ zgen-clone() {
     local branch="${2}"
     local url="$(-zgen-get-clone-url ${repo})"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+
+    ZGENOM_PLUGINS+=("${repo}")
 
     if [[ -d "${dir}" ]]; then
         return # Everything is fine!
@@ -336,6 +342,8 @@ zgen-save() {
     -zginit "export PMSPEC=$PMSPEC"
     -zginit "export ZPFX=$ZPFX"
     -zginit ""
+    -zginit "ZGENOM_PLUGINS=(${(@qOa)ZGENOM_PLUGINS})"
+    -zginit ""
     -zginit "ZSH=$(-zgen-get-zsh)"
     if [[ ${ZGEN_USE_PREZTO} == 1 ]]; then
         -zginit ""
@@ -510,10 +518,7 @@ zgen-load() {
         local location="${dir}/${file}"
         location=${location%/}
 
-        # clone repo if not present
-        if [[ ! -d "${dir}" ]]; then
-            zgen-clone "${repo}" "${branch}"
-        fi
+        zgen-clone "${repo}" "${branch}"
     fi
 
     # source the file
@@ -581,7 +586,7 @@ zgen-loadall() {
 }
 
 -zgen-bin-dir() {
-    echo "$ZGEN_SOURCE/bin"
+    -zgputs "$ZGEN_SOURCE/bin"
 }
 -zgen-bin() {
     local file="${1}"
@@ -607,10 +612,7 @@ zgen-bin() {
     local name="${4}"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
-    # clone repo if not present
-    if [[ ! -d "${dir}" ]]; then
-        zgen-clone "${repo}" "${branch}"
-    fi
+    zgen-clone "${repo}" "${branch}"
 
     if [[ ! -d $(-zgen-bin-dir) ]]; then
         mkdir -p $(-zgen-bin-dir)
@@ -655,6 +657,17 @@ zgen-selfupdate() {
         -zgpute "Not running from a git repository; cannot automatically update."
         return 1
     fi
+}
+
+zgen-clean() {
+    local repo_dir
+    local repo
+    for repo_dir in $ZGEN_DIR/*/*; do
+        repo="${${repo_dir#$ZGEN_DIR/}%-*}"
+        if [[ ! ${ZGENOM_PLUGINS[@]} =~ $repo ]]; then
+            rm -drf "$repo_dir" && -zgputs "Removing $repo."
+        fi
+    done
 }
 
 # Backwards compatibilty for zgen
@@ -702,10 +715,7 @@ zgen-pmodule() {
 
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
-    # clone repo if not present
-    if [[ ! -d "${dir}" ]]; then
-        zgen-clone "${repo}" "${branch}"
-    fi
+    zgen-clone "${repo}" "${branch}"
 
     local module="${repo:t}"
     -zgen-prezto-load "'${module}'"

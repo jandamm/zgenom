@@ -150,7 +150,7 @@ zgen-clone() {
     local url="$(-zgen-get-clone-url ${repo})"
     local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
 
-    ZGENOM_PLUGINS+=("${repo}")
+    ZGENOM_PLUGINS+=("${repo}/${branch:-___}")
 
     if [[ -d "${dir}" ]]; then
         return # Everything is fine!
@@ -662,8 +662,9 @@ zgen-selfupdate() {
 zgen-clean() {
     local repo_dir
     local repo
-    for repo_dir in $ZGEN_DIR/*/*; do
-        repo="${${repo_dir#$ZGEN_DIR/}%-*}"
+    setopt localoptions nullglob
+    for repo_dir in $ZGEN_DIR/**/*/.git; do
+        repo="${${repo_dir#$ZGEN_DIR/}%/.git}"
         if [[ ! ${ZGENOM_PLUGINS[@]} =~ $repo ]]; then
             rm -drf "$repo_dir" && -zgputs "Removing $repo."
         fi

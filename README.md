@@ -329,7 +329,7 @@ be disabled if you've already called `compinit` yourself before sourcing
 # load zgenom
 source "${HOME}/.zgenom/zgenom.zsh"
 
-# if the init scipt doesn't exist
+# if the init script doesn't exist
 if ! zgenom saved; then
     echo "Creating a zgenom save"
 

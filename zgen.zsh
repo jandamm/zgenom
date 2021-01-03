@@ -725,7 +725,7 @@ zgenom() {
     local cmd="${1}"
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgenom [command | instruction] [options]`'
-        -zgputs "    commands: list, saved, reset, clone, update, selfupdate, compile"
+        -zgputs "    commands: list, saved, reset, clone, update, selfupdate, clean, compile"
         -zgputs "    instructions: load, bin, ohmyzsh, pmodule, prezto, save, apply"
         return 1
     fi

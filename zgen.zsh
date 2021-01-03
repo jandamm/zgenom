@@ -675,10 +675,11 @@ zgen-clean() {
     local repo_dir
     local repo
     setopt localoptions nullglob
-    for repo_dir in $ZGEN_DIR/**/*/.git; do
-        repo="${${repo_dir#$ZGEN_DIR/}%/.git}"
+    for repo_dir in $ZGEN_DIR/**/*/.git/; do
+        repo_dir="${repo_dir%/.git/}"
+        repo="${repo_dir#$ZGEN_DIR/}"
         if [[ ! ${ZGENOM_PLUGINS[@]} =~ $repo ]]; then
-            rm -drf "$repo_dir" && -zgputs "Removing $repo."
+            rm -drf "$repo_dir" && -zgputs "Removing '$repo'."
         fi
     done
 }

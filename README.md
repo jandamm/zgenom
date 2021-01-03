@@ -328,7 +328,7 @@ be disabled if you've already called `compinit` yourself before sourcing
 - compinit with custom flags wasn't working properly.
 - Update to `ohmyzsh/ohmyzsh`.
 - Implement the [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html).
-- Add `zgenom clear` to remove all unused plugins.
+- Add `zgenom clean` to remove all unused plugins.
 
 ## Example .zshrc
 

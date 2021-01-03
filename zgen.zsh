@@ -95,12 +95,14 @@ fi
     -zgputs "$url"
 }
 
+-zgen-get-clone-dir-legacy() { -zgen-get-clone-dir "$1" "${2:-___}" "-" }
 -zgen-get-clone-dir() {
     local repo="${1}"
     local branch="${2:-___}"
+    local separator="${3:-/}"
 
     if [[ -e "${repo}/.git" ]]; then
-        -zgputs "${ZGEN_DIR}/local/${repo:t}-${branch}"
+        -zgputs "${ZGEN_DIR}/local/${repo:t}${separator}${branch}"
     else
         # Repo directory will be location/reponame
         local reponame="${repo:t}"
@@ -108,7 +110,7 @@ fi
         # work well in a filename.
         local location="$(-zgen-encode-url ${repo:h})"
         repo="${location}/${reponame}"
-        -zgputs "${ZGEN_DIR}/${repo}-${branch}"
+        -zgputs "${ZGEN_DIR}/${repo}${separator}${branch}"
     fi
 }
 
@@ -148,29 +150,39 @@ zgen-clone() {
 
     if [[ -d "${dir}" ]]; then
         return # Everything is fine!
-    elif [[ -z "$branch" ]] && [[ -d "${dir%-___}-master" ]]; then
+    elif [[ -d "$(-zgen-get-clone-dir-legacy ${repo} ${branch})" ]]; then
+        -zgen-migrate-dir "$dir" "$repo" "$branch"
+    elif [[ -z "$branch" ]] && [[ -d "$(-zgen-get-clone-dir-legacy ${repo} master)" ]]; then
+        local answer
         if [[ -z "$ZGENOM_MIGRATE_ALL" ]]; then
             -zgputs "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."
-            -zgputs "Do you want to migrate '${${dir#$ZGEN_DIR/}%-___}-master' to use the default branch?"
+            -zgputs "Do you want to migrate '$repo - master' to use the default branch?"
             -zgputs "If you say no, the repo will be cloned again. If you say quit, zgenom will be stopped."
             read "answer?(y/n/a/q): "
         else
             answer='y'
         fi
         case $answer in
-            [Yy]) command mv "${dir%-___}-master" "$dir" ;;
-            [Aa]) ZGENOM_MIGRATE_ALL="Y" && command mv "${dir%-___}-master" "$dir" ;;
+            [Yy]) -zgen-migrate-dir "$dir" "$repo" "master" ;;
+            [Aa]) ZGENOM_MIGRATE_ALL="Y" && -zgen-migrate-dir "$dir" "$repo" "master" ;;
             [Nn]) zgen-clone "$repo" '___' "${submodules:---no-submodules}" ;;
             *)    kill -s SIGINT $! ;;
         esac
     else
-        mkdir -p "${dir}"
+        command mkdir -p "${dir}"
         if [[ -n "$branch" ]] && [[ ! "$branch" = '___' ]]; then
             eval "git clone --depth=1 $submodules -b $branch $url $dir"
         else
             eval "git clone --depth=1 $submodules $url $dir"
         fi
     fi
+}
+
+-zgen-migrate-dir() {
+    local dir="${1}"
+    local repo="${2}"
+    local branch="${3}"
+    command mkdir -p ${dir%/*} && command mv $(-zgen-get-clone-dir-legacy ${repo} ${branch}) $dir
 }
 
 -zgen-add-to-fpath() {

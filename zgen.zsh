@@ -334,8 +334,8 @@ zgen-reset() {
 
 zgen-update() {
     setopt localoptions extended_glob nullglob
-    for repo in "${ZGEN_DIR}"/(^.git)/*; do
-        [[ "${repo}" =~ $ZGEN_DIR/_/* ]] && continue
+    for repo in $ZGEN_DIR/**/*/.git/; do
+        repo="${repo%/.git/}"
         -zgpute "Updating '${repo}' ..."
         (cd "${repo}" \
             && -zgen-git-pull \

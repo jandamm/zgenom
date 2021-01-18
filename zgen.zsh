@@ -336,7 +336,7 @@ zgen-update() {
     setopt localoptions extended_glob nullglob
     for repo in $ZGEN_DIR/**/*/.git/; do
         repo="${repo%/.git/}"
-        -zgpute "Updating '${repo}' ..."
+        -zgpute "Updating '${repo#$ZGEN_DIR/}' ..."
         (cd "${repo}" \
             && -zgen-git-pull \
             && git submodule update --recursive)

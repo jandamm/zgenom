@@ -5,6 +5,28 @@ local ZGEN_SOURCE="$0:A:h"
 -zgputs() { printf %s\\n "$@" ;}
 -zgpute() { printf %s\\n "-- zgenom: $*" >&2 ;}
 
+# very simple template for usage instructions
+-zgen-usage() {
+    -zgputs 'usage: `zgenom [command | instruction] [options]`'
+    -zgputs "    commands: list, saved, reset, clone, update, selfupdate, clean, compile"
+    -zgputs "    instructions: load, bin, ohmyzsh, pmodule, prezto, save, apply"
+    -zgputs "                                                                           "
+    -zgputs "    bin:           clone and add files to PATH"
+    -zgputs "    clean:         remove all unused repositories"
+    -zgputs "    clone:         clone plugin from repository"
+    -zgputs "    compile:       compile files the given path"
+    -zgputs "    completions:   deprecated, please use load instead"
+    -zgputs "    help:          print usage information"
+    -zgputs "    list:          print init.zsh"
+    -zgputs "    load:          clone and load plugin"
+    -zgputs "    ohmyzsh:       load ohmyzsh base"
+    -zgputs "    prezto:        load prezto base"
+    -zgputs "    reset:         delete the init.zsh script"
+    -zgputs "    save:          check for init.zsh script"
+    -zgputs "    selfupdate:    update zgenom framework from repository"
+    -zgputs "    update:        update all repositories and remove the init script"
+}
+
 -zginit() { -zgputs "$*" >> "${ZGEN_INIT}" ;}
 
 # Zsh Plugin Standard
@@ -727,6 +749,11 @@ zgen-prezto() {
 
 }
 
+# provides basic usage info
+zgen-help() {
+    -zgen-usage
+}
+
 zgen-pmodule() {
     local repo="${1}"
     local branch="${2}"
@@ -742,18 +769,15 @@ zgen-pmodule() {
 zgenom() {
     local cmd="${1}"
     if [[ -z "${cmd}" ]]; then
-        -zgputs 'usage: `zgenom [command | instruction] [options]`'
-        -zgputs "    commands: list, saved, reset, clone, update, selfupdate, clean, compile"
-        -zgputs "    instructions: load, bin, ohmyzsh, pmodule, prezto, save, apply"
+        -zgen-usage
         return 1
     fi
-
-    shift
-
     if functions "zgen-${cmd}" > /dev/null ; then
+         shift
         "zgen-${cmd}" "${@}"
     else
         -zgpute 'Command not found: `'"${cmd}"\`
+        -zgen-usage
         return 1
     fi
 }

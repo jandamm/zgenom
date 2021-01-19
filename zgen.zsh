@@ -496,13 +496,17 @@ zgen-compile() {
             if [ ! -f $file ] || [[ $file = *.zwc ]]; then
                 continue
 
+            # Check *.sh if it can be parsed from zsh
+            elif [[ $file = *.sh ]]; then
+                if ! zsh -n $file 2>/dev/null; then
+                    continue
+                fi
+
             # Check for shebang if not:
             # - zsh startup file
             # - *.zsh
-            # - *.sh
             # - zcompdump*
             elif [[ $file != *.zsh ]] \
-                && [[ $file != *.sh ]] \
                 && [[ $file != *zcompdump* ]] \
                 && [[ ! $file =~ '\.z(shenv|profile|shrc|login|logout)$' ]]; then
                 read -r firstline < $file

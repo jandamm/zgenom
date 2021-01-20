@@ -19,7 +19,6 @@ _zgen_commands=(
     "clean:remove all unused repositories"
     "clone:clone plugin from repository"
     "compile:compile files the given path"
-    "completions:deprecated, please use load instead"
     "help:print usage information"
     "list:print init.zsh"
     "load:clone and load plugin"

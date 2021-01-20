@@ -156,6 +156,9 @@ it freshly.
 changes.** So don't use it if you plan to tamper with clone locally. If you
 just want to use plugins this won't affect you.
 
+[See this comment for more
+information.](https://github.com/jandamm/zgenom/issues/48#issuecomment-763740949)
+
 ### General zgenom functions
 
 #### Load plugins and completions

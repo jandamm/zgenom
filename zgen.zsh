@@ -361,6 +361,7 @@ zgen-update() {
         (cd "${repo}" \
             && -zgen-git-pull \
             && git submodule update --recursive)
+        -zgputs ''
     done
     zgen-reset
 }

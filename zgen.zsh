@@ -35,7 +35,9 @@ else
     export PMSPEC=0fiPs
     ZGENOM_AUTO_ADD_BIN=0
 fi
-export ZPFX="$ZGEN_SOURCE/polaris"
+if [[ -z $ZPFX ]]; then
+    export ZPFX="$ZGEN_SOURCE/polaris"
+fi
 
 # Source zgen-lazy.zsh only once
 if [[ -z $ZGENOM_LAZY_LOCK ]]; then

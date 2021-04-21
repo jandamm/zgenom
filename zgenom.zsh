@@ -14,6 +14,10 @@ if [[ -z "${ZGEN_INIT}" ]]; then
     ZGEN_INIT="${ZGEN_DIR}/init.zsh"
 fi
 
+if [[ -z $ZGENOM_ZGEN_COMPAT ]]; then
+    ZGENOM_ZGEN_COMPAT=1
+fi
+
 zgen-saved() {
     [[ -f "${ZGEN_INIT}" ]] && return 0 || return 1
 }
@@ -43,6 +47,8 @@ fi
 fpath=($ZGEN_SOURCE/functions $fpath)
 zgen-init
 
-# Creating an alias wouldn't work when scripting like this:
-# zsh -c ".../zgen.zsh && zgen update"
-zgen() { zgenom $@ }
+if [[ $ZGENOM_ZGEN_COMPAT -eq 1 ]]; then
+    # Creating an alias wouldn't work when scripting like this:
+    # zsh -c ".../zgen.zsh && zgen update"
+    zgen() { zgenom $@ }
+fi

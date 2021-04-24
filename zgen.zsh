@@ -70,6 +70,10 @@ if [[ -z "${ZGENOM_PLUGINS}" ]]; then
     ZGENOM_PLUGINS=()
 fi
 
+if [[ -z $ZGENOM_AUTO_COMPILE ]]; then
+    ZGENOM_COMPILE_ZDOTDIR=0
+fi
+
 if [[ -z "${zsh_loaded_plugins}" ]]; then
     typeset -ga zsh_loaded_plugins
 fi
@@ -459,6 +463,18 @@ zgen-save() {
 
     -zgpute "Compiling files ..."
     zgen-compile $ZGEN_SOURCE
+    if [[ $ZGENOM_AUTO_COMPILE -eq 1 ]]; then
+        if [[ -n $ZDOTDIR ]] && [[ -d $ZDOTDIR ]]; then
+            zgen-compile $HOME/.zshenv
+            zgen-compile $ZDOTDIR
+        else
+            zgen-compile $HOME/.zshenv
+            zgen-compile $HOME/.zprofile
+            zgen-compile $HOME/.zshrc
+            zgen-compile $HOME/.zlogin
+            zgen-compile $HOME/.zlogout
+        fi
+    fi
     if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then
         # Compile ZGEN_DIR if not subdirectory of ZGEN_SOURCE
         zgen-compile $ZGEN_DIR

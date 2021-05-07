@@ -11,9 +11,11 @@ zgenom.
 Zgenom provides you simple commands for managing plugins. It installs your
 plugins and generates a static init script that will source them for you every
 time you run the shell. We do this to save some startup time by not having to
-execute time consuming logic (plugin checking, updates, etc) every time a new shell session is started. This means that
-you have to manually check for updates (`zgenom update`) and reset the init
-script (`zgenom reset`) whenever you add or remove plugins. If you _do_ want automatic updates, install [autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom).
+execute time consuming logic (plugin checking, updates, etc) every time a new
+shell session is started. This means that you have to manually check for
+updates (`zgenom update`) and reset the init script (`zgenom reset`) whenever
+you add or remove plugins. If you _do_ want automatic updates, install
+[autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom).
 
 ## Installation
 
@@ -396,11 +398,17 @@ Here is a partial example how to work with prezto
 
 ## Other resources
 
-The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list contains many zgenom compatible zsh plugins & themes that you may find useful.
+The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list
+contains many zgenom compatible zsh plugins & themes that you may find useful.
 
-There's a [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit) for using zsh and zgenom at that does a guided setup of zgenom, including installing a starting sampler of useful plugins.
+There's a [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit)
+for using zsh and zgenom that does a guided setup of zgenom, including
+installing a starting sampler of useful plugins.
 
-The [autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom) plugin enables zgenom to periodically update itself and your list of installed plugins.
+The [autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom) plugin
+enables zgenom to periodically update itself and your list of installed
+plugins.
+
 ## Alternatives
 
 - [antigen](https://github.com/zsh-users/antigen) - popular and mature

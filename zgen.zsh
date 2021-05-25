@@ -11,6 +11,7 @@ local ZGEN_SOURCE="$0:A:h"
     -zgputs "    commands: list, saved, reset, clone, update, selfupdate, clean, compile"
     -zgputs "    instructions: load, bin, ohmyzsh, pmodule, prezto, save, apply"
     -zgputs "                                                                           "
+    -zgputs "    autoupdate:    update plugins periodically"
     -zgputs "    bin:           clone and add files to PATH"
     -zgputs "    clean:         remove all unused repositories"
     -zgputs "    clone:         clone plugin from repository"
@@ -782,6 +783,100 @@ zgen-pmodule() {
 
     local module="${repo:t}"
     -zgen-prezto-load "'${module}'"
+}
+
+# Automatically update plugins periodically
+
+_zgenom-check-interval() {
+    now=$(date +%s)
+    if [[ ! -f ~/"${1}" ]]; then
+        # We've never run, set the last run time to the dawn of time, or at
+        # least the dawn of posix time.
+        echo 0 > ~/"${1}"
+    fi
+    last_update=$(cat ~/"${1}")
+    interval=$(expr ${now} - ${last_update})
+    echo "${interval}"
+}
+
+_zgenom-check-for-updates() {
+    if [ -z "${ZGEN_PLUGIN_UPDATE_DAYS}" ]; then
+        ZGEN_PLUGIN_UPDATE_DAYS=7
+    fi
+
+    if [ -z "${ZGEN_SYSTEM_UPDATE_DAYS}" ]; then
+        ZGEN_SYSTEM_UPDATE_DAYS=7
+    fi
+
+    if [ -z "${ZGEN_SYSTEM_RECEIPT_F}" ]; then
+        if [ -n "${ZGEN_DIR}" ]; then
+        # Since the $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F variables are with
+        # respect to the home directory but $ZGEN_DIR is an absolute path,
+        # $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F is set to $ZGEN_DIR (if it is defined)
+        # with the $HOME directory as the prefix removed
+        # (That's what the "${${ZGEN_DIR}#${HOME}}" syntax does: it removes the
+        # "$HOME" prefix from "$ZGEN_DIR")
+            ZGEN_SYSTEM_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom_system_lastupdate"
+        else
+            ZGEN_SYSTEM_RECEIPT_F='.zgenom_system_lastupdate'
+        fi
+    fi
+
+    if [ -z "${ZGEN_PLUGIN_RECEIPT_F}" ]; then
+        if [ -n "${ZGEN_DIR}" ]; then
+            ZGEN_PLUGIN_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom_plugin_lastupdate"
+        else
+            ZGEN_PLUGIN_RECEIPT_F='.zgenom_plugin_lastupdate'
+        fi
+    fi
+
+    local day_seconds=$(expr 24 \* 60 \* 60)
+    local system_seconds=$(expr "${day_seconds}" \* "${ZGEN_SYSTEM_UPDATE_DAYS}")
+    local plugins_seconds=$(expr ${day_seconds} \* ${ZGEN_PLUGIN_UPDATE_DAYS})
+
+    local last_plugin=$(_zgen-check-interval ${ZGEN_PLUGIN_RECEIPT_F})
+    local last_system=$(_zgen-check-interval ${ZGEN_SYSTEM_RECEIPT_F})
+
+    if [[ ${last_plugin} -gt ${plugins_seconds} ]]; then
+        if [[ ! -z "${ZGEN_AUTOUPDATE_VERBOSE}" ]]; then
+            echo "It has been $(expr ${last_plugin} / $day_seconds) days since your zgenom plugins were updated"
+            echo "Updating plugins"
+        fi
+        zgenom update
+        date '+%s' >! ~/${ZGEN_PLUGIN_RECEIPT_F}
+        zgenom save
+    fi
+
+    if [[ ${last_system} -gt ${system_seconds} ]]; then
+        if [[ ! -z "${ZGEN_AUTOUPDATE_VERBOSE}" ]]; then
+            echo "It has been $(expr ${last_plugin} / ${day_seconds}) days since your zgenom was updated"
+            echo "Updating zgenom..."
+        fi
+        zgenom selfupdate
+        date +%s >! ~/${ZGEN_SYSTEM_RECEIPT_F}
+    fi
+}
+
+zgenom-autoupdate() {
+    # Don't update if we're running as different user than whoever
+    # owns ~/.zgenom. This prevents sudo runs from leaving root-owned
+    # files & directories in ~/.zgenom that will break future updates
+    # by the user.
+    #
+    # Use ls and awk instead of stat because stat has incompatible arguments
+    # on linux, macOS and FreeBSD.
+    local zgen_owner=$(ls -ld ${ZGEN_DIR:-$HOME/.zgenom} | awk '{print $3}')
+    if [[ "$zgen_owner" == "$USER" ]]; then
+        zmodload zsh/system
+        lockfile=~/.zgenom-autoupdate-lock
+        touch "$lockfile"
+        if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
+            _zgenom-check-for-updates
+            command rm -f "$lockfile"
+        fi
+            unset lockfile
+        fi
+    fi
 }
 
 zgenom() {

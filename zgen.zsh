@@ -645,6 +645,7 @@ zgen-loadall() {
 -zgen-bin-dir() {
     -zgputs "$ZGEN_SOURCE/bin"
 }
+
 -zgen-bin() {
     local file="${1}"
     local name="${2}"
@@ -785,30 +786,48 @@ zgen-pmodule() {
     -zgen-prezto-load "'${module}'"
 }
 
-# Automatically update plugins periodically
+# Automatically update zgenom and/or our plugins periodically.
+#
+# Read interval in days from ZGENOM_PLUGIN_UPDATE_DAYS and
+# ZGENOM_SYSTEM_UPDATE_DAYS when present, otherwise assume 7 days.
 
 _zgenom-check-interval() {
-    now=$(date +%s)
+    now=$(date '+%s')
     if [[ ! -f ~/"${1}" ]]; then
         # We've never run, set the last run time to the dawn of time, or at
         # least the dawn of posix time.
         echo 0 > ~/"${1}"
     fi
+
     last_update=$(cat ~/"${1}")
     interval=$(expr ${now} - ${last_update})
     echo "${interval}"
 }
 
 _zgenom-check-for-updates() {
-    if [ -z "${ZGEN_PLUGIN_UPDATE_DAYS}" ]; then
-        ZGEN_PLUGIN_UPDATE_DAYS=7
+    if [[ -z "${ZGENOM_PLUGIN_UPDATE_DAYS}" ]]; then
+        # For backward compatibility, if they haven't set it, see if they
+        # set the old update plugin variable and read that when present
+        if [[ -n "${ZGEN_PLUGIN_UPDATE_DAYS}" ]]; then
+            ZGENOM_PLUGIN_UPDATE_DAYS="${ZGEN_PLUGIN_UPDATE_DAYS}"
+        else
+            # ok, no settings variables exist, update weekly
+            ZGENOM_PLUGIN_UPDATE_DAYS=7
+        fi
     fi
 
-    if [ -z "${ZGEN_SYSTEM_UPDATE_DAYS}" ]; then
-        ZGEN_SYSTEM_UPDATE_DAYS=7
+    if [[ -z "${ZGENOM_SYSTEM_UPDATE_DAYS}" ]]; then
+        # For backward compatibility, if they haven't set it, see if they
+        # set the old update plugin variable and read that when present
+        if [[ -n "${ZGEN_SYSTEM_UPDATE_DAYS}" ]]; then
+            ZGENOM_SYSTEM_UPDATE_DAYS="${ZGEN_SYSTEM_UPDATE_DAYS}"
+        else
+            # ok, no settings variables exist, update weekly
+            ZGENOM_SYSTEM_UPDATE_DAYS=7
+        fi
     fi
 
-    if [ -z "${ZGEN_SYSTEM_RECEIPT_F}" ]; then
+    if [ -z "${ZGENOM_SYSTEM_RECEIPT_F}" ]; then
         if [ -n "${ZGEN_DIR}" ]; then
         # Since the $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F variables are with
         # respect to the home directory but $ZGEN_DIR is an absolute path,
@@ -816,17 +835,17 @@ _zgenom-check-for-updates() {
         # with the $HOME directory as the prefix removed
         # (That's what the "${${ZGEN_DIR}#${HOME}}" syntax does: it removes the
         # "$HOME" prefix from "$ZGEN_DIR")
-            ZGEN_SYSTEM_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom_system_lastupdate"
+            ZGENOM_SYSTEM_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom-system-lastupdate"
         else
-            ZGEN_SYSTEM_RECEIPT_F='.zgenom_system_lastupdate'
+            ZGENOM_SYSTEM_RECEIPT_F='.zgenom-system-lastupdate'
         fi
     fi
 
-    if [ -z "${ZGEN_PLUGIN_RECEIPT_F}" ]; then
+    if [ -z "${ZGENOM_PLUGIN_RECEIPT_F}" ]; then
         if [ -n "${ZGEN_DIR}" ]; then
-            ZGEN_PLUGIN_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom_plugin_lastupdate"
+            ZGENOM_PLUGIN_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom-plugin-lastupdate"
         else
-            ZGEN_PLUGIN_RECEIPT_F='.zgenom_plugin_lastupdate'
+            ZGENOM_PLUGIN_RECEIPT_F='.zgenom-plugin-lastupdate'
         fi
     fi
 
@@ -834,47 +853,49 @@ _zgenom-check-for-updates() {
     local system_seconds=$(expr "${day_seconds}" \* "${ZGEN_SYSTEM_UPDATE_DAYS}")
     local plugins_seconds=$(expr ${day_seconds} \* ${ZGEN_PLUGIN_UPDATE_DAYS})
 
-    local last_plugin=$(_zgen-check-interval ${ZGEN_PLUGIN_RECEIPT_F})
-    local last_system=$(_zgen-check-interval ${ZGEN_SYSTEM_RECEIPT_F})
+    local last_plugin_update=$(_zgenom-check-interval ${ZGEN_PLUGIN_RECEIPT_F})
+    local last_system_update=$(_zgenom-check-interval ${ZGEN_SYSTEM_RECEIPT_F})
 
-    if [[ ${last_plugin} -gt ${plugins_seconds} ]]; then
-        if [[ ! -z "${ZGEN_AUTOUPDATE_VERBOSE}" ]]; then
-            echo "It has been $(expr ${last_plugin} / $day_seconds) days since your zgenom plugins were updated"
-            echo "Updating plugins"
+    if [[ ${last_plugin_update} -gt ${plugins_seconds} ]]; then
+        if [[ ! -z "${ZGENOM_AUTOUPDATE_VERBOSE}" ]]; then
+            echo "It has been $(expr ${last_plugin_update} / $day_seconds) days since your zgenom plugins were updated."
+            echo "Updating plugins..."
         fi
         zgenom update
-        date '+%s' >! ~/${ZGEN_PLUGIN_RECEIPT_F}
+        date '+%s' >! ~/${ZGENOM_PLUGIN_RECEIPT_F}
         zgenom save
     fi
 
-    if [[ ${last_system} -gt ${system_seconds} ]]; then
-        if [[ ! -z "${ZGEN_AUTOUPDATE_VERBOSE}" ]]; then
-            echo "It has been $(expr ${last_plugin} / ${day_seconds}) days since your zgenom was updated"
+    if [[ ${last_system_update} -gt ${system_seconds} ]]; then
+        if [[ ! -z "${ZGENOM_AUTOUPDATE_VERBOSE}" ]]; then
+            echo "It has been $(expr ${last_system_update} / ${day_seconds}) days since your zgenom was updated."
             echo "Updating zgenom..."
         fi
         zgenom selfupdate
-        date +%s >! ~/${ZGEN_SYSTEM_RECEIPT_F}
+        date +%s >! ~/${ZGENOM_SYSTEM_RECEIPT_F}
     fi
 }
 
-zgenom-autoupdate() {
+zgen-autoupdate() {
     # Don't update if we're running as different user than whoever
-    # owns ~/.zgenom. This prevents sudo runs from leaving root-owned
-    # files & directories in ~/.zgenom that will break future updates
-    # by the user.
+    # owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
+    # files & directories in ZGEN_DIR that will break future update
+    # runs by the user.
     #
-    # Use ls and awk instead of stat because stat has incompatible arguments
+    # Using ls and awk instead of stat because stat has incompatible arguments
     # on linux, macOS and FreeBSD.
     local zgen_owner=$(ls -ld ${ZGEN_DIR:-$HOME/.zgenom} | awk '{print $3}')
     if [[ "$zgen_owner" == "$USER" ]]; then
         zmodload zsh/system
-        lockfile=~/.zgenom-autoupdate-lock
-        touch "$lockfile"
-        if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
+        local lockfile=~/.zgenom-autoupdate-lock
+        touch "${lockfile}"
+        if ! which zsystem &> /dev/null || zsystem flock -t 1 "${lockfile}"; then
             _zgenom-check-for-updates
-            command rm -f "$lockfile"
+            command rm -f "${lockfile}"
         fi
-            unset lockfile
+    else
+        if [[ -n "$DEBUG" ]]; then
+            echo "Skipping autoupdate because $USER doesn't own ${ZGEN_DIR:-$HOME/.zgenom}."
         fi
     fi
 }

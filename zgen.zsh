@@ -372,6 +372,7 @@ zgen-update() {
         -zgputs ''
     done
     zgen-reset
+    _zgenom-write-plugin-autoupdate-receipt
 }
 
 zgen-save() {
@@ -712,6 +713,7 @@ zgen-selfupdate() {
         (cd "${ZGEN_SOURCE}" \
             && git pull) \
             && zgen-reset
+            && _zgenom-write-system-autoupdate-receipt
     else
         -zgpute "Not running from a git repository; cannot automatically update."
         return 1
@@ -802,6 +804,31 @@ _zgenom-check-interval() {
     echo "${interval}"
 }
 
+_zgenom-get-autoupdate-receipt-path() {
+    if [ -n "${ZGEN_DIR}" ]; then
+        # Since the $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F variables are with
+        # respect to the home directory but $ZGEN_DIR is an absolute path,
+        # $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F is set to $ZGEN_DIR (if it is defined)
+        # with the $HOME directory as the prefix removed
+        # (That's what the "${${ZGEN_DIR}#${HOME}}" syntax does: it removes the
+        # "$HOME" prefix from "$ZGEN_DIR")
+        RECEIPT_F="${${ZGEN_DIR}#${HOME}}/$1"
+    else
+        RECEIPT_F="$1"
+    fi
+    echo $RECEIPT_F
+}
+
+_zgenom-write-system-autoupdate-receipt() {
+    local ZGENOM_SYSTEM_RECEIPT_F=$(_zgenom-get-autoupdate-receipt-path .zgenom-system-lastupdate)
+    date +%s >! ~/${ZGENOM_SYSTEM_RECEIPT_F}
+}
+
+_zgenom-write-plugin-autoupdate-receipt() {
+    local ZGENOM_PLUGIN_RECEIPT_F=$(_zgenom-get-autoupdate-receipt-path .zgenom-plugin-lastupdate)
+    date +%s >! ~/${ZGENOM_PLUGIN_RECEIPT_F}
+}
+
 _zgenom-check-for-system-autoupdates() {
     # Usage: zgenom autoupdate-system INTEGER_DAYS
     local ZGENOM_SYSTEM_UPDATE_DAYS=$(printf '%d\n' "$1" 2>/dev/null)
@@ -811,17 +838,7 @@ _zgenom-check-for-system-autoupdates() {
     fi
 
     if [ -z "${ZGENOM_SYSTEM_RECEIPT_F}" ]; then
-        if [ -n "${ZGEN_DIR}" ]; then
-            # Since the $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F variables are with
-            # respect to the home directory but $ZGEN_DIR is an absolute path,
-            # $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F is set to $ZGEN_DIR (if it is defined)
-            # with the $HOME directory as the prefix removed
-            # (That's what the "${${ZGEN_DIR}#${HOME}}" syntax does: it removes the
-            # "$HOME" prefix from "$ZGEN_DIR")
-            ZGENOM_SYSTEM_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom-system-lastupdate"
-        else
-            ZGENOM_SYSTEM_RECEIPT_F='.zgenom-system-lastupdate'
-        fi
+        ZGENOM_SYSTEM_RECEIPT_F=$(_zgenom-get-autoupdate-receipt-path .zgenom-system-lastupdate)
     fi
 
     local day_seconds=$(expr 24 \* 60 \* 60)
@@ -834,7 +851,7 @@ _zgenom-check-for-system-autoupdates() {
             echo "Updating zgenom..."
         fi
         zgenom selfupdate
-        date +%s >! ~/${ZGENOM_SYSTEM_RECEIPT_F}
+        _zgenom-write-system-autoupdate-receipt
     fi
 }
 
@@ -847,17 +864,7 @@ _zgenom-check-for-plugin-autoupdates() {
     fi
 
     if [ -z "${ZGENOM_PLUGIN_RECEIPT_F}" ]; then
-        if [ -n "${ZGEN_DIR}" ]; then
-            # Since the $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F variables are with
-            # respect to the home directory but $ZGEN_DIR is an absolute path,
-            # $ZGEN_{SYSTEM|PLUGIN}_RECEIPT_F is set to $ZGEN_DIR (if it is defined)
-            # with the $HOME directory as the prefix removed
-            # (That's what the "${${ZGEN_DIR}#${HOME}}" syntax does: it removes the
-            # "$HOME" prefix from "$ZGEN_DIR")
-            ZGENOM_PLUGIN_RECEIPT_F="${${ZGEN_DIR}#${HOME}}/.zgenom-plugin-lastupdate"
-        else
-            ZGENOM_PLUGIN_RECEIPT_F='.zgenom-plugin-lastupdate'
-        fi
+        ZGENOM_PLUGIN_RECEIPT_F=$(_zgenom-get-autoupdate-receipt-path .zgenom-plugin-lastupdate)
     fi
 
     local day_seconds=$(expr 24 \* 60 \* 60)
@@ -871,7 +878,7 @@ _zgenom-check-for-plugin-autoupdates() {
             echo "Updating plugins..."
         fi
         zgenom update
-        date '+%s' >! ~/${ZGENOM_PLUGIN_RECEIPT_F}
+        _zgenom-write-plugin-autoupdate-receipt
         zgenom save
     fi
 }
@@ -935,6 +942,11 @@ zgen-autoupdate-plugins() {
             echo "Skipping autoupdate of plugins because $USER doesn't own ${ZGEN_DIR:-$HOME/.zgenom}."
         fi
     fi
+}
+
+zgen-autoupdate() {
+    zgen-autoupdate-system $@
+    zgen-autoupdate-plugins $@
 }
 
 zgenom() {

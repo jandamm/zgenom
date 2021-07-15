@@ -19,7 +19,11 @@ if [[ -z $ZGENOM_ZGEN_COMPAT ]]; then
 fi
 
 zgen-saved() {
-    [[ -f "${ZGEN_INIT}" ]] && return 0 || return 1
+    if [[ -f "${ZGEN_INIT}" ]]; then
+        zgen-init
+    else
+        return 1
+    fi
 }
 
 zgen-init() {
@@ -45,7 +49,6 @@ if [[ -z $ZGENOM_LAZY_LOCK ]]; then
 fi
 
 fpath=($ZGEN_SOURCE/functions $fpath)
-zgen-init
 
 if [[ $ZGENOM_ZGEN_COMPAT -eq 1 ]]; then
     # Creating an alias wouldn't work when scripting like this:

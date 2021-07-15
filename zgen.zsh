@@ -713,7 +713,7 @@ zgen-selfupdate() {
     if [[ -e "${ZGEN_SOURCE}/.git" ]]; then
         (cd "${ZGEN_SOURCE}" \
             && git pull) \
-            && zgen-reset
+            && zgen-reset \
             && _zgenom-write-system-autoupdate-receipt
     else
         -zgpute "Not running from a git repository; cannot automatically update."
@@ -843,16 +843,15 @@ _zgenom-check-for-system-autoupdates() {
     fi
 
     local day_seconds=$(expr 24 \* 60 \* 60)
-    local system_seconds=$(expr "${day_seconds}" \* "${ZGEN_SYSTEM_UPDATE_DAYS}")
-    local last_system_update=$(_zgenom-check-interval ${ZGEN_SYSTEM_RECEIPT_F})
+    local system_seconds=$(expr "${day_seconds}" \* "${ZGENOM_SYSTEM_UPDATE_DAYS}")
+    local last_system_update=$(_zgenom-check-interval ${ZGENOM_SYSTEM_RECEIPT_F})
 
     if [[ ${last_system_update} -gt ${system_seconds} ]]; then
         if [[ ! -z "${ZGENOM_AUTOUPDATE_VERBOSE}" ]]; then
             echo "It has been $(expr ${last_system_update} / ${day_seconds}) days since your zgenom was updated."
             echo "Updating zgenom..."
         fi
-        zgenom selfupdate
-        _zgenom-write-system-autoupdate-receipt
+        zgen-selfupdate
     fi
 }
 
@@ -869,22 +868,21 @@ _zgenom-check-for-plugin-autoupdates() {
     fi
 
     local day_seconds=$(expr 24 \* 60 \* 60)
-    local plugins_seconds=$(expr ${day_seconds} \* ${ZGEN_PLUGIN_UPDATE_DAYS})
+    local plugins_seconds=$(expr ${day_seconds} \* ${ZGENOM_PLUGIN_UPDATE_DAYS})
 
-    local last_plugin_update=$(_zgenom-check-interval ${ZGEN_PLUGIN_RECEIPT_F})
+    local last_plugin_update=$(_zgenom-check-interval ${ZGENOM_PLUGIN_RECEIPT_F})
 
     if [[ ${last_plugin_update} -gt ${plugins_seconds} ]]; then
         if [[ ! -z "${ZGENOM_AUTOUPDATE_VERBOSE}" ]]; then
             echo "It has been $(expr ${last_plugin_update} / $day_seconds) days since your zgenom plugins were updated."
             echo "Updating plugins..."
         fi
-        zgenom update
-        _zgenom-write-plugin-autoupdate-receipt
-        zgenom save
+        zgen-update
     fi
 }
 
-zgen-autoupdate-system() {
+# This command will be available as standalone in the future
+_zgen-autoupdate-system() {
     # Don't update if we're running as different user than whoever
     # owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
     # files & directories in ZGEN_DIR that will break future update
@@ -915,7 +913,8 @@ zgen-autoupdate-system() {
     fi
 }
 
-zgen-autoupdate-plugins() {
+# This command will be available as standalone in the future
+_zgen-autoupdate-plugins() {
     # Don't update if we're running as different user than whoever
     # owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
     # files & directories in ZGEN_DIR that will break future update
@@ -935,7 +934,7 @@ zgen-autoupdate-plugins() {
         local lockfile=~/.zgenom-autoupdate-lock
         touch "${lockfile}"
         if ! which zsystem &> /dev/null || zsystem flock -t 1 "${lockfile}"; then
-            _zgenom-check-for-system-autoupdates "$1"
+            _zgenom-check-for-plugin-autoupdates "$1"
             command rm -f "${lockfile}"
         fi
     else
@@ -946,8 +945,8 @@ zgen-autoupdate-plugins() {
 }
 
 zgen-autoupdate() {
-    zgen-autoupdate-system $@
-    zgen-autoupdate-plugins $@
+    _zgen-autoupdate-system $@
+    _zgen-autoupdate-plugins $@
 }
 
 zgenom() {

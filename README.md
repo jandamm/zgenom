@@ -15,7 +15,7 @@ execute time consuming logic (plugin checking, updates, etc) every time a new
 shell session is started. This means that you have to manually check for
 updates (`zgenom update`) and reset the init script (`zgenom reset`) whenever
 you add or remove plugins. If you _do_ want automatic updates, see
-[autoupdate](#Run updates automatically).
+[autoupdate](#Run-updates-automatically).
 
 ## Installation
 

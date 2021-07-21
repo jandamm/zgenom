@@ -28,6 +28,7 @@ _zgen_commands=(
     "save:check for init.zsh script"
     "selfupdate:update zgenom framework from repository"
     "update:update all repositories and remove the init script"
+    "autoupdate:automatically check for updates of zgenom and plugins"
 )
 
 _describe -t commands "zgenom subcommand" _zgen_commands

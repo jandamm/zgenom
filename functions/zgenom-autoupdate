@@ -1,0 +1,81 @@
+#!/usr/bin/env zsh
+
+__zgenom-check-interval() {
+    now=$(date '+%s')
+    if [[ ! -f $1 ]]; then
+        # We've never run, set the last run time to the dawn of time, or at
+        # least the dawn of posix time.
+        echo 0 > $1
+    fi
+
+    last_update=$(command cat $1)
+    expr $now - $last_update
+}
+
+__zgenom-should-autoupdate() {
+    local min_interval=$(( $1 * 86400 )) # days to seconds
+    local last_update=$(__zgenom-check-interval "$ZGEN_DIR/.zgenom-$2-lastupdate")
+
+    if [[ $last_update -gt $min_interval ]]; then
+        if [[ -n "$3" ]]; then
+            echo "It has been $(( $last_update / 86400 )) days since your last $2 update."
+        fi
+        return 0
+    fi
+    return 1
+}
+
+# Don't update if we're running as different user than whoever
+# owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
+# files & directories in ZGEN_DIR that will break future update
+# runs by the user.
+#
+# Using ls and awk instead of stat because stat has incompatible arguments
+# on linux, macOS and FreeBSD.
+function zgenom-autoupdate() {
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose
+
+    if [[ -z $self ]] && [[ -z $plugin ]]; then
+        self=${1:-7}
+        plugin=${1:-7}
+    else
+        [[ -n $self ]] && self=$self[2]
+        [[ -n $plugin ]] && plugin=$plugin[2]
+    fi
+    verbose=${verbose:-$ZGENOM_AUTOUPDATE_VERBOSE}
+
+    if [[ -n $self && $self -lt 1 ]] || [[ -n $plugin && $plugin -lt 1 ]]; then
+        echo "You must specify an integer number of days, greater than zero."
+        return 1
+    fi
+
+    local zgen_owner=$(ls -ld $ZGEN_DIR | awk '{print $3}')
+
+    if [[ "$zgen_owner" == "$USER" ]]; then
+        zmodload zsh/system
+        local lockfile="$HOME/.zgenom-autoupdate-lock"
+        touch "$lockfile"
+        if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
+
+            # Update self
+            if [[ -n $self ]] && __zgenom-should-autoupdate $self system $verbose; then
+                [[ -n $verbose ]] && echo "Updating zgenom..."
+                zgenom selfupdate
+            fi
+
+            # Update plugins
+            if [[ -n $plugin ]] && __zgenom-should-autoupdate $plugin plugin $verbose; then
+                [[ -n $verbose ]] && echo "Updating plugins..."
+                zgenom update
+            fi
+
+            command rm -f "${lockfile}"
+        fi
+    else
+        if [[ -n "$DEBUG" ]]; then
+            echo "Skipping autoupdate of plugins because $USER doesn't own $ZGEN_DIR."
+        fi
+    fi
+}
+
+zgenom-autoupdate $@

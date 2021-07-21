@@ -32,12 +32,21 @@ zgen-init() {
     fi
 }
 
+zgen-autoupdate() {
+    autoload -Uz zgenom-autoupdate
+    zgenom-autoupdate $@
+}
+
 # Run initialization only once
 if [[ -z $ZGENOM_LAZY_LOCK ]]; then
     zgenom() {
         case $1 in
             saved) zgen-saved;;
             init) zgen-init;;
+            autoupdate)
+                shift
+                zgen-autoupdate $@
+                ;;
             *)
                 ZGENOM_LAZY_LOCK=yes
                 source "${ZGEN_SOURCE}/zgen.zsh"

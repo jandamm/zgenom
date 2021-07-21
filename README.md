@@ -14,8 +14,8 @@ time you run the shell. We do this to save some startup time by not having to
 execute time consuming logic (plugin checking, updates, etc) every time a new
 shell session is started. This means that you have to manually check for
 updates (`zgenom update`) and reset the init script (`zgenom reset`) whenever
-you add or remove plugins. If you _do_ want automatic updates, install
-[autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom).
+you add or remove plugins. If you _do_ want automatic updates, see
+[autoupdate](#Run updates automatically).
 
 ## Installation
 
@@ -59,7 +59,7 @@ to compile your dotfiles as well. (see below)
 To enable lazy loading change `source "${HOME}/.zgen/zgen.zsh"` to `source
 "${HOME}/.zgen/zgenom.zsh"`.
 
-**Note:** While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
+**Note**: While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
 and `oh-my-zsh` can be used interchangeably.
 
 ## Usage
@@ -198,7 +198,7 @@ checked. All executables in the found folder will be added to the path.
 
 If `location` is a folder all executables of this folder are added to the path.
 
-**Note:** This may lead to unwanted side-effects so it's recommended that you
+**Note**: This may lead to unwanted side-effects so it's recommended that you
 specify the files you need. You can use `zgenom list bin` to check which
 executables are added.
 
@@ -247,7 +247,7 @@ Returns 0 if an init script exists.
 
 It also sources the init script if it exists.
 
-**Note:** If you don't use `zgenom saved` you should call `zgenom init` manually.
+**Note**: If you don't use `zgenom saved` you should call `zgenom init` manually.
 
 #### Update all plugins and reset
 
@@ -262,6 +262,34 @@ Pulls updates on every plugin repository and removes the init script.
 ```zsh
 zgenom selfupdate
 ```
+
+#### Run updates automatically
+
+```zsh
+# Update every 7 days
+zgenom autoupdate
+
+# Update every 3 days
+zgenom autoupdate 3
+
+# Update only zgenom every 14 days
+zgenom autoupdate --self 14
+
+# Update only plugins every 7 days
+zgenom autoupdate --plugin 7
+
+# Update plugins every 7 days and zgenom every 14 days
+zgenom autoupdate --plugin 7 --self 14
+```
+
+Call `zgenom selfupdate` and `zgenom update` regularly. If you call one of them
+manually this will also reset the timer. So you can use it to make sure you
+update every x days.
+
+Make sure to call it before you check for the init file with `zgenom saved`.
+
+**Note**: Using `zgenom autoupdate` increased the startup time around 50%.
+I'll try to decrease startup penalty in the future.
 
 #### Clean zgenom plugins
 
@@ -304,7 +332,7 @@ The unsupported paragraphs are all related to unloading (which isn't currently
 supported) and a hook for plugins that the plugin manager should call on
 updates (you probably shouldn't use zgenom if your plugin requires this).
 
-**Note:** *Paragraph 3* says to add every `./bin` folder found in a plugin.
+**Note**: *Paragraph 3* says to add every `./bin` folder found in a plugin.
 I personally wouldn't want this so this is off by default. Please set
 `ZGENOM_AUTO_ADD_BIN=1` before sourcing `zgenom.zsh` to enable this paragraph.
 
@@ -346,6 +374,9 @@ be disabled if you've already called `compinit` yourself before sourcing
 ```zsh
 # load zgenom
 source "${HOME}/.zgenom/zgenom.zsh"
+
+# Uncomment to check for plugin and zgenom updates every 7 days
+# zgenom autoupdate
 
 # if the init script doesn't exist
 if ! zgenom saved; then
@@ -410,10 +441,6 @@ contains many zgenom compatible zsh plugins & themes that you may find useful.
 There's a [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit)
 for using zsh and zgenom that does a guided setup of zgenom, including
 installing a starting sampler of useful plugins.
-
-The [autoupdate-zgenom](https://github.com/unixorn/autoupdate-zgenom) plugin
-enables zgenom to periodically update itself and your list of installed
-plugins.
 
 ## Alternatives
 

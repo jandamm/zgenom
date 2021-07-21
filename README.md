@@ -245,6 +245,10 @@ zgenom saved
 
 Returns 0 if an init script exists.
 
+It also sources the init script if it exists.
+
+**Note:** If you don't use `zgenom saved` you should call `zgenom init` manually.
+
 #### Update all plugins and reset
 
 ```zsh
@@ -264,6 +268,8 @@ zgenom selfupdate
 ```zsh
 zgenom clean
 ```
+
+Removes every plugin which isn't loaded in the current shell session.
 
 #### Watch files for modifications
 

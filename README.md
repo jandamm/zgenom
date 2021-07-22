@@ -288,7 +288,8 @@ update every x days.
 
 Make sure to call it before you check for the init file with `zgenom saved`.
 
-**Note**: Using `zgenom autoupdate` increased the startup time around 50%.
+**Note**: Using `zgenom autoupdate` increases the startup time around 30% (~30ms).
+This figure may vary depending on your plugins and machine.
 I'll try to decrease startup penalty in the future.
 
 #### Clean zgenom plugins
@@ -361,13 +362,14 @@ be disabled if you've already called `compinit` yourself before sourcing
 - Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
 - The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom`
   to (except when you have `~/.zgen` for backwards compatibility).
-- Allow cloning without submodules `zgenom clone [repo] --no-submodules`.
+- Allow cloning without submodules `zgenom clone <repo> --no-submodules`.
 - Full support for non `master` branches (e.g. `main`). This includes following
   a new default branch.
 - compinit with custom flags wasn't working properly.
 - Update to `ohmyzsh/ohmyzsh`.
 - Implement the [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html).
 - Add `zgenom clean` to remove all unused plugins.
+- Add `zgenom autoupdate` to check for updates periodically.
 
 ## Example .zshrc
 

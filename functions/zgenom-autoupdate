@@ -1,23 +1,24 @@
 #!/usr/bin/env zsh
 
 __zgenom-check-interval() {
-    now=$(date '+%s')
+    local last_update
     if [[ ! -f $1 ]]; then
         # We've never run, set the last run time to the dawn of time, or at
         # least the dawn of posix time.
+        last_update=0
         echo 0 > $1
+    else
+        read -r last_update < $1
     fi
-
-    last_update=$(command cat $1)
-    expr $now - $last_update
+    expr $2 - $last_update
 }
 
 __zgenom-should-autoupdate() {
     local min_interval=$(( $1 * 86400 )) # days to seconds
-    local last_update=$(__zgenom-check-interval "$ZGEN_DIR/.zgenom-$2-lastupdate")
+    local last_update=$(__zgenom-check-interval "$ZGEN_DIR/.zgenom-$2-lastupdate" $3)
 
     if [[ $last_update -gt $min_interval ]]; then
-        if [[ -n "$3" ]]; then
+        if [[ -n "$4" ]]; then
             echo "It has been $(( $last_update / 86400 )) days since your last $2 update."
         fi
         return 0
@@ -33,6 +34,7 @@ __zgenom-should-autoupdate() {
 # Using ls and awk instead of stat because stat has incompatible arguments
 # on linux, macOS and FreeBSD.
 function zgenom-autoupdate() {
+    local self plugin verbose
     zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose
 
     if [[ -z $self ]] && [[ -z $plugin ]]; then
@@ -54,22 +56,23 @@ function zgenom-autoupdate() {
     if [[ "$zgen_owner" == "$USER" ]]; then
         zmodload zsh/system
         local lockfile="$HOME/.zgenom-autoupdate-lock"
-        touch "$lockfile"
+        printf '' > "$lockfile"
         if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
+            local now=$(command date '+%s')
 
             # Update self
-            if [[ -n $self ]] && __zgenom-should-autoupdate $self system $verbose; then
+            if [[ -n $self ]] && __zgenom-should-autoupdate $self system $now $verbose; then
                 [[ -n $verbose ]] && echo "Updating zgenom..."
                 zgenom selfupdate
             fi
 
             # Update plugins
-            if [[ -n $plugin ]] && __zgenom-should-autoupdate $plugin plugin $verbose; then
+            if [[ -n $plugin ]] && __zgenom-should-autoupdate $plugin plugin $now $verbose; then
                 [[ -n $verbose ]] && echo "Updating plugins..."
                 zgenom update
             fi
 
-            command rm -f "${lockfile}"
+            command rm -f "$lockfile"
         fi
     else
         if [[ -n "$DEBUG" ]]; then

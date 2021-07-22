@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+tmpfile=$(mktemp)
+
+if [[ ${1:-0} -ge 1 ]]; then
+	repeats=$1
+else
+	repeats=20
+fi
+
+echo "Check startup times on $repeats runs..."
+
+repeat $repeats {
+	time zsh -il -c 'exit'
+} 2>&1 | sed -e 's/.* cpu \(.*\) total/\1/g' > $tmpfile
+
+if hash datamash &>/dev/null ; then
+	echo 'avrg     min    median   max    stdev'
+	datamash --round=3 mean 1 min 1 median 1 max 1 sstdev 1 < $tmpfile
+else
+	echo 'Install GNU datamash to get a better output.'
+	cat $tmpfile
+fi
+rm $tmpfile

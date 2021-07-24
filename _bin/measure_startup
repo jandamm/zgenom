@@ -14,7 +14,7 @@ echo "Check startup times on $repeats runs..."
 
 repeat $repeats {
 	time zsh -il -c 'exit'
-} 2>&1 | sed -e 's/.* cpu \(.*\) total/\1/g' > $tmpfile
+} 2>&1 | sed -e '/.* cpu \(.*\) total/!d' | sed -e 's/.* cpu \(.*\) total/\1/g' > $tmpfile
 
 if hash datamash &>/dev/null ; then
 	echo 'avrg     min    median   max    stdev'

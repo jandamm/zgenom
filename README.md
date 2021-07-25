@@ -401,7 +401,7 @@ EOPLUGINS
     # ^ can't indent this EOPLUGINS
 
     # completions
-    zgenom load zsh-users/zsh-completions src
+    zgenom load zsh-users/zsh-completions
 
     # theme
     zgenom ohmyzsh themes/arrow

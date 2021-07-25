@@ -510,8 +510,8 @@ zgen-apply() {
 }
 
 -zgen-path-contains() {
-    setopt localoptions nonomatch nocshnullglob nonullglob;
-    [ -e "$1"/*"$2"(.,@[1]) ]
+    setopt localoptions nonomatch nocshnullglob nonullglob extended_glob;
+    [ -e "$1"/[^_]*"$2"(.,@[1]) ]
 }
 
 -zgen-get-zsh(){

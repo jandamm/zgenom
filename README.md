@@ -183,7 +183,7 @@ logic". It will also append `location` to `$fpath`.
     - `git@*:*/*`
 - `location`
   - relative path to a script/folder
-  - useful for repositories that don't have proper plugin support like `zsh-users/zsh-completions`
+  - useful for repositories that don't have proper plugin
 - `branch`
   - specifies the git branch to use
 

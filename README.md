@@ -86,6 +86,9 @@ if ! zgenom saved; then
     zgenom ohmyzsh plugins/git
     zgenom ohmyzsh plugins/sudo
 
+    # Install ohmyzsh osx plugin if on macOS
+    [[ "$(uname -s)" = Darwin ]] && zgenom ohmyzsh plugins/osx
+
     # prezto options
     zgenom prezto editor key-bindings 'emacs'
     zgenom prezto prompt theme 'sorin'
@@ -94,6 +97,11 @@ if ! zgenom saved; then
     # If you use prezto and ohmyzsh - load ohmyzsh first.
     zgenom prezto
     zgenom prezto command-not-found
+
+    # Load prezto tmux when tmux is installed
+    if hash tmux &>/dev/null; then
+        zgenom prezto tmux
+    fi
 
     zgenom load zsh-users/zsh-syntax-highlighting
     zgenom load /path/to/super-secret-private-plugin
@@ -113,8 +121,42 @@ EOPLUGINS
 
     # save all to init script
     zgenom save
+
+    # Compile your zsh files
+    zgenom compile "$HOME/.zshrc"
+    zgenom compile $ZDOTDIR
+
+    # You can perform other "time consuming" maintenance tasks here as well.
+
+    # rbenv rehash
 fi
 ```
+
+You can also use `zgenom` in a more dynamic way:
+
+```zsh
+if ! zgenom saved; then
+    # ...
+fi
+
+# Load plugins on a per shell basis:
+# (Only load chucknorris on weekends)
+if is_weekend; then
+    zgenom ohmyzsh plugins/chucknorris
+    # Be aware that this will be loaded dynamically and reduces the startup time.
+    # When using `zgenom clean` this plugin might be removed as well (unless it is
+    # currently loaded).
+fi
+
+# Load plugins lazily when used:
+# (When brew is first executed, load ohmyzsh brew and then use brew)
+alias brew='unalias brew && zgenom ohmyzsh brew && brew'
+# Be aware that this might not work for all plugins.
+```
+
+**Note:** The more dynamic examples are not official features. They are rather
+byproducts. They are included as ideas you can test out. In most cases it's
+probably a better idea to always load the plugin instead.
 
 ## New features
 

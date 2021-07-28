@@ -19,6 +19,8 @@ you add or remove plugins. If you _do_ want automatic updates, see
 
 ## Installation
 
+<details><summary>...</summary>
+
 Clone the zgenom repository:
 
 ```zsh
@@ -33,7 +35,7 @@ source "${HOME}/.zgenom/zgenom.zsh"
 ```
 
 Place the following code after the one above to load ohmyzsh for example, see
-[Usage](#Usage) for more details.
+[Example](#Example-zshrc) and [Usage](#Usage) for more details.
 
 ```zsh
 # if the init script doesn't exist
@@ -59,10 +61,81 @@ to compile your dotfiles as well. (see below)
 To enable lazy loading change `source "${HOME}/.zgen/zgen.zsh"` to `source
 "${HOME}/.zgen/zgenom.zsh"`.
 
-**Note**: While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
+**Note:** While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
 and `oh-my-zsh` can be used interchangeably.
 
+</details>
+
+## Example .zshrc
+
+```zsh
+# load zgenom
+source "${HOME}/.zgenom/zgenom.zsh"
+
+# Uncomment to check for plugin and zgenom updates every 7 days
+# zgenom autoupdate
+
+# if the init script doesn't exist
+if ! zgenom saved; then
+    echo "Creating a zgenom save"
+
+    # Ohmyzsh
+    zgenom ohmyzsh
+
+    # plugins
+    zgenom ohmyzsh plugins/git
+    zgenom ohmyzsh plugins/sudo
+
+    # prezto options
+    zgenom prezto editor key-bindings 'emacs'
+    zgenom prezto prompt theme 'sorin'
+
+    # prezto and modules
+    # If you use prezto and ohmyzsh - load ohmyzsh first.
+    zgenom prezto
+    zgenom prezto command-not-found
+
+    zgenom load zsh-users/zsh-syntax-highlighting
+    zgenom load /path/to/super-secret-private-plugin
+
+    # bulk load
+    zgenom loadall <<EOPLUGINS
+        zsh-users/zsh-history-substring-search
+        /path/to/local/plugin
+EOPLUGINS
+    # ^ can't indent this EOPLUGINS
+
+    # completions
+    zgenom load zsh-users/zsh-completions
+
+    # theme
+    zgenom ohmyzsh themes/arrow
+
+    # save all to init script
+    zgenom save
+fi
+```
+
+## New features
+
+- Compiling your sourced scripts.
+- Add `zgenom compile` in case you want to recursively compile your dotfiles (manually).
+- Add `zgenom bin` to add an executable to your `$PATH`.
+- Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
+- The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom`
+  to (except when you have `~/.zgen` for backwards compatibility).
+- Allow cloning without submodules `zgenom clone <repo> --no-submodules`.
+- Full support for non `master` branches (e.g. `main`). This includes following
+  a new default branch.
+- compinit with custom flags wasn't working properly.
+- Update to `ohmyzsh/ohmyzsh`.
+- Implement the [Zsh Plugin Standard](#Zsh-Plugin-Standard).
+- Add `zgenom clean` to remove all unused plugins.
+- Add `zgenom autoupdate` to check for updates periodically.
+
 ## Usage
+
+<details><summary>...</summary>
 
 ### ohmyzsh
 
@@ -104,7 +177,7 @@ zgenom prezto
 This will create a symlink in the `$ZSHDOTDIR` or `$HOME` directory. This is
 needed by prezto.
 
-**Note**: When `zgenom prezto` is used with `zgenom ohmyzsh` together, `prezto`
+**Note:** When `zgenom prezto` is used with `zgenom ohmyzsh` together, `prezto`
 should be **put behind** `ohmyzsh`. Or prompt theme from prezto may not display
 as expected.
 
@@ -116,7 +189,7 @@ zgenom prezto <modulename>
 
 This uses the Prezto method for loading modules.
 
-**Note**: Some modules from prezto are enabled by default. Use
+**Note:** Some modules from prezto are enabled by default. Use
 `ZGEN_PREZTO_LOAD_DEFAULT=0` to disable this behavior.
 
 #### Load a repo as Prezto plugins
@@ -198,7 +271,7 @@ checked. All executables in the found folder will be added to the path.
 
 If `location` is a folder all executables of this folder are added to the path.
 
-**Note**: This may lead to unwanted side-effects so it's recommended that you
+**Note:** This may lead to unwanted side-effects so it's recommended that you
 specify the files you need. You can use `zgenom list bin` to check which
 executables are added.
 
@@ -247,7 +320,7 @@ Returns 0 if an init script exists.
 
 It also sources the init script if it exists.
 
-**Note**: If you don't use `zgenom saved` you should call `zgenom init` manually.
+**Note:** If you don't use `zgenom saved` you should call `zgenom init` manually.
 
 #### Update all plugins and reset
 
@@ -288,7 +361,7 @@ update every x days.
 
 Make sure to call it before you check for the init file with `zgenom saved`.
 
-**Note**: Using `zgenom autoupdate` increases the startup time around 30% (~30ms).
+**Note:** Using `zgenom autoupdate` increases the startup time around 30% (~30ms).
 This figure may vary depending on your plugins and machine.
 I'll try to decrease startup penalty in the future.
 
@@ -323,19 +396,7 @@ zsh file it can recursively find in `~/.zsh`. You might not want to add any of
 these lines to your `.zsrhc` but run them manually or automatically in the
 background.
 
-## [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html)
-
-The Zsh Plugin Standard describes how a plugin for zsh should be written and
-what the plugin manager should do to support a plugin.
-
-Zgenom does support most paragraphs of this standard. (1-3 & 7-9 as of this writing).
-The unsupported paragraphs are all related to unloading (which isn't currently
-supported) and a hook for plugins that the plugin manager should call on
-updates (you probably shouldn't use zgenom if your plugin requires this).
-
-**Note**: *Paragraph 3* says to add every `./bin` folder found in a plugin.
-I personally wouldn't want this so this is off by default. Please set
-`ZGENOM_AUTO_ADD_BIN=1` before sourcing `zgenom.zsh` to enable this paragraph.
+</details>
 
 ## Notes
 
@@ -354,87 +415,6 @@ be disabled if you've already called `compinit` yourself before sourcing
 
   [compinit]: <http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit> "Zsh manual 20.2.1: Use of compinit"
 
-## New features
-
-- Compiling your sourced scripts.
-- Add `zgenom compile` in case you want to recursively compile your dotfiles (manually).
-- Add `zgenom bin` to add an executable to your `$PATH`.
-- Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
-- The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom`
-  to (except when you have `~/.zgen` for backwards compatibility).
-- Allow cloning without submodules `zgenom clone <repo> --no-submodules`.
-- Full support for non `master` branches (e.g. `main`). This includes following
-  a new default branch.
-- compinit with custom flags wasn't working properly.
-- Update to `ohmyzsh/ohmyzsh`.
-- Implement the [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html).
-- Add `zgenom clean` to remove all unused plugins.
-- Add `zgenom autoupdate` to check for updates periodically.
-
-## Example .zshrc
-
-```zsh
-# load zgenom
-source "${HOME}/.zgenom/zgenom.zsh"
-
-# Uncomment to check for plugin and zgenom updates every 7 days
-# zgenom autoupdate
-
-# if the init script doesn't exist
-if ! zgenom saved; then
-    echo "Creating a zgenom save"
-
-    zgenom ohmyzsh
-
-    # plugins
-    zgenom ohmyzsh plugins/git
-    zgenom ohmyzsh plugins/sudo
-    zgenom ohmyzsh plugins/commandnotfound
-    zgenom load zsh-users/zsh-syntax-highlighting
-    zgenom load /path/to/super-secret-private-plugin
-
-    # bulk load
-    zgenom loadall <<EOPLUGINS
-        zsh-users/zsh-history-substring-search
-        /path/to/local/plugin
-EOPLUGINS
-    # ^ can't indent this EOPLUGINS
-
-    # completions
-    zgenom load zsh-users/zsh-completions
-
-    # theme
-    zgenom ohmyzsh themes/arrow
-
-    # save all to init script
-    zgenom save
-fi
-```
-
-### Example .zshrc for prezto
-
-Here is a partial example how to work with prezto
-
-```zsh
-...
-    echo "Creating a zgenom save"
-
-    # prezto options
-    zgenom prezto editor key-bindings 'emacs'
-    zgenom prezto prompt theme 'sorin'
-
-    # prezto and modules
-    zgenom prezto
-    zgenom prezto git
-    zgenom prezto command-not-found
-    zgenom prezto syntax-highlighting
-
-    # plugins
-    zgenom load /path/to/super-secret-private-plugin
-....
-
-```
-
 ## Other resources
 
 The [awesome-zsh-plugins](https://github.com/unixorn/awesome-zsh-plugins) list
@@ -443,6 +423,20 @@ contains many zgenom compatible zsh plugins & themes that you may find useful.
 There's a [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit)
 for using zsh and zgenom that does a guided setup of zgenom, including
 installing a starting sampler of useful plugins.
+
+### [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html)
+
+The Zsh Plugin Standard describes how a plugin for zsh should be written and
+what the plugin manager should do to support a plugin.
+
+Zgenom does support most paragraphs of this standard. (1-3 & 7-9 as of this writing).
+The unsupported paragraphs are all related to unloading (which isn't currently
+supported) and a hook for plugins that the plugin manager should call on
+updates (you probably shouldn't use zgenom if your plugin requires this).
+
+**Note:** *Paragraph 3* says to add every `./bin` folder found in a plugin.
+I personally wouldn't want this so this is off by default. Please set
+`ZGENOM_AUTO_ADD_BIN=1` before sourcing `zgenom.zsh` to enable this paragraph.
 
 ## Alternatives
 

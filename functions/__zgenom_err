@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+function __zgenom_err() {
+    printf '-- zgenom: %s\n' $* >&2
+}
+
+__zgenom_err $@

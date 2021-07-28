@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+function zgenom-apply() {
+    if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
+        __zgenom_err "Initializing completions ..."
+
+        autoload -Uz compinit && \
+            eval "compinit $ZGEN_COMPINIT_FLAGS"
+    fi
+
+    if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d $ZGENOM_SOURCE_BIN ]]; then
+        path=($ZGENOM_SOURCE_BIN $path)
+    fi
+}
+
+zgenom-apply $@

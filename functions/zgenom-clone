@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+
+function zgenom-clone() {
+    local repo="${1}"
+    local submodules='--recursive'
+    if [[ $2 = '--no-submodules' ]]; then
+        submodules=''
+        shift
+    elif [[ $3 = '--no-submodules' ]]; then
+        submodules=''
+    fi
+    local branch="${2}"
+    local url="$(-zgen-get-clone-url ${repo})"
+    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+
+    ZGENOM_PLUGINS+=("${repo}/${branch:-___}")
+
+    if [[ -d "${dir}" ]]; then
+        return # Everything is fine!
+
+    elif [[ -d "$(-zgen-get-clone-dir-legacy ${repo} ${branch})" ]]; then
+        -zgen-migrate-dir "$dir" "$repo" "$branch"
+
+    elif [[ -z "$branch" ]] && [[ -d "$(-zgen-get-clone-dir-legacy ${repo} master)" ]]; then
+        local answer
+        if [[ -z "$ZGENOM_MIGRATE_ALL" ]]; then
+            __zgenom_out "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."
+            __zgenom_out "Do you want to migrate '$repo - master' to use the default branch?"
+            __zgenom_out "If you say no, the repo will be cloned again. If you say quit, zgenom will be stopped."
+            read "answer?(y/n/a/q): "
+        else
+            answer='y'
+        fi
+        case $answer in
+            [Yy]) -zgen-migrate-dir "$dir" "$repo" "master" ;;
+            [Aa]) ZGENOM_MIGRATE_ALL="Y" && -zgen-migrate-dir "$dir" "$repo" "master" ;;
+            [Nn]) zgenom-clone "$repo" '___' "${submodules:---no-submodules}" ;;
+            *)    kill -s SIGINT $! ;;
+        esac
+
+    else
+        command mkdir -p "${dir}"
+        if [[ -n "$branch" ]] && [[ ! "$branch" = '___' ]]; then
+            eval "git clone --depth=1 $submodules -b $branch $url $dir"
+        else
+            eval "git clone --depth=1 $submodules $url $dir"
+        fi
+    fi
+}
+
+zgenom-clone $@

@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+
+function zgenom-load() {
+    if [[ "$#" == 0 ]]; then
+        __zgenom_err '`load` requires at least one parameter:'
+        __zgenom_err '`zgenom load <repo> [location] [branch]`'
+        return
+    elif [[ "$#" == 1 && ("${1[1]}" == '/' || "${1[1]}" == '.' ) ]]; then
+        local location="${1}"
+    else
+        local repo="${1}"
+        local file="${2}"
+        local branch="${3}"
+        local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+        local location="${dir}/${file}"
+        location=${location%/}
+
+        zgenom-clone "${repo}" "${branch}"
+    fi
+
+    # source the file
+    if [[ -f "${location}" ]]; then
+        -zgen-source "${location}"
+
+    # Prezto modules have init.zsh files
+    elif [[ -f "${location}/init.zsh" ]]; then
+        -zgen-source "${location}/init.zsh"
+
+    elif [[ -f "${location}.zsh-theme" ]]; then
+        -zgen-source "${location}.zsh-theme"
+
+    elif [[ -f "${location}.theme.zsh" ]]; then
+        -zgen-source "${location}.theme.zsh"
+
+    elif [[ -f "${location}.zshplugin" ]]; then
+        -zgen-source "${location}.zshplugin"
+
+    elif [[ -f "${location}.zsh.plugin" ]]; then
+        -zgen-source "${location}.zsh.plugin"
+
+    # Classic ohmyzsh plugins have foo.plugin.zsh
+    elif -zgen-path-contains "${location}" ".plugin.zsh" ; then
+        for script (${location}/*\.plugin\.zsh(N)) -zgen-source "${script}"
+
+    elif -zgen-path-contains "${location}" ".zsh" ; then
+        for script (${location}/*\.zsh(N)) -zgen-source "${script}"
+
+    elif -zgen-path-contains "${location}" ".sh" ; then
+        for script (${location}/*\.sh(N)) -zgen-source "${script}"
+
+    # Completions
+    elif [[ -d "${location}" ]]; then
+        -zgen-add-to-fpath "${location}"
+
+    else
+        if [[ -d ${dir:-$location} ]]; then
+            __zgenom_err "Failed to load ${dir:-$location} -- ${file}"
+        else
+            __zgenom_err "Failed to load ${dir:-$location}"
+        fi
+        return
+    fi
+
+    if [[ $ZGENOM_AUTO_ADD_BIN -eq 1 ]] && [[ -d "$dir/bin" ]]; then
+        zgenom-bin "$repo" bin "$branch"
+    fi
+}
+
+zgenom-load $@

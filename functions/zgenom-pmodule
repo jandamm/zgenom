@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+function zgenom-pmodule() {
+    local repo="${1}"
+    local branch="${2}"
+
+    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+
+    zgenom-clone "${repo}" "${branch}"
+
+    local module="${repo:t}"
+    -zgen-prezto-load "'${module}'"
+}
+
+zgenom-pmodule $@

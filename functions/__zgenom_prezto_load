@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+function __zgenom_prezto_load() {
+    local params="$*"
+    local cmd="pmodload ${params[@]}"
+
+    # execute in place
+    eval $cmd
+
+    if [[ ! "${ZGEN_PREZTO[@]}" =~ "${cmd}" ]]; then
+        ZGEN_PREZTO_LOAD+=("${params[@]}")
+    fi
+
+}
+
+__zgenom_prezto_load $@

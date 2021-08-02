@@ -4,12 +4,12 @@ function zgenom-pmodule() {
     local repo="${1}"
     local branch="${2}"
 
-    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+    local dir="$(__zgenom_clone_dir ${repo} ${branch})"
 
     zgenom-clone "${repo}" "${branch}"
 
     local module="${repo:t}"
-    -zgen-prezto-load "'${module}'"
+    __zgenom_prezto_load "'${module}'"
 }
 
 zgenom-pmodule $@

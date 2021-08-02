@@ -1,5 +1,33 @@
 #!/usr/bin/env zsh
 
+function __zgenom_get_clone_url() {
+    local repo="${1}"
+
+    if [[ -e "${repo}/.git" ]]; then
+        __zgenom_out "${repo}"
+    else
+        # Sourced from antigen url resolution logic.
+        # https://github.com/zsh-users/antigen/blob/master/antigen.zsh
+        # Expand short github url syntax: `username/reponame`.
+        if [[ $repo != git://* &&
+              $repo != https://* &&
+              $repo != http://* &&
+              $repo != ssh://* &&
+              $repo != git@*:*/*
+              ]]; then
+            repo="https://github.com/${repo%.git}.git"
+        fi
+        __zgenom_out "${repo}"
+    fi
+}
+
+function __zgenom_migrate_dir() {
+    local dir="${1}"
+    local repo="${2}"
+    local branch="${3}"
+    command mkdir -p ${dir%/*} && command mv $(__zgenom_clone_dir "${repo}" "${branch}" -) $dir
+}
+
 function zgenom-clone() {
     local repo="${1}"
     local submodules='--recursive'
@@ -10,20 +38,20 @@ function zgenom-clone() {
         submodules=''
     fi
     local branch="${2}"
-    local url="$(-zgen-get-clone-url ${repo})"
-    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+    local url="$(__zgenom_get_clone_url ${repo})"
+    local dir="$(__zgenom_clone_dir ${repo} ${branch})"
 
     ZGENOM_PLUGINS+=("${repo}/${branch:-___}")
 
     if [[ -d "${dir}" ]]; then
         return # Everything is fine!
 
-    elif [[ -d "$(-zgen-get-clone-dir-legacy ${repo} ${branch})" ]]; then
-        -zgen-migrate-dir "$dir" "$repo" "$branch"
+    elif [[ -d "$(__zgenom_clone_dir "${repo}" "${branch}" -)" ]]; then
+        __zgenom_migrate_dir "$dir" "$repo" "$branch"
 
-    elif [[ -z "$branch" ]] && [[ -d "$(-zgen-get-clone-dir-legacy ${repo} master)" ]]; then
+    elif [[ -z "$branch" ]] && [[ -d "$(__zgenom_clone_dir "${repo}" master -)" ]]; then
         local answer
-        if [[ -z "$ZGENOM_MIGRATE_ALL" ]]; then
+        if [[ -z "$_ZGENOM_MIGRATE_ALL" ]]; then
             __zgenom_out "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."
             __zgenom_out "Do you want to migrate '$repo - master' to use the default branch?"
             __zgenom_out "If you say no, the repo will be cloned again. If you say quit, zgenom will be stopped."
@@ -32,8 +60,8 @@ function zgenom-clone() {
             answer='y'
         fi
         case $answer in
-            [Yy]) -zgen-migrate-dir "$dir" "$repo" "master" ;;
-            [Aa]) ZGENOM_MIGRATE_ALL="Y" && -zgen-migrate-dir "$dir" "$repo" "master" ;;
+            [Yy]) __zgenom_migrate_dir "$dir" "$repo" "master" ;;
+            [Aa]) _ZGENOM_MIGRATE_ALL=1 && __zgenom_migrate_dir "$dir" "$repo" "master" ;;
             [Nn]) zgenom-clone "$repo" '___' "${submodules:---no-submodules}" ;;
             *)    kill -s SIGINT $! ;;
         esac

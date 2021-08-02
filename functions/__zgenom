@@ -1,10 +1,8 @@
 #!/usr/bin/env zsh
-# TODO: Remove helpers.zsh and inline them
-source "$ZGEN_SOURCE/helpers.zsh"
 
 # Autoload all functions
 setopt localoptions extendedglob
-for func in $ZGEN_SOURCE/functions/zgenom-*~*.zwc; do
+for func in $ZGEN_SOURCE/functions/(__|)zgenom(-|_)*~*.zwc; do
     autoload -Uz ${func:t}
 done
 

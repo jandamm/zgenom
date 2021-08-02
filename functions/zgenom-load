@@ -1,5 +1,47 @@
 #!/usr/bin/env zsh
 
+function __zgenom_path_contains() {
+    setopt localoptions nonomatch nocshnullglob nonullglob;
+    [ -e "$1"/[^_]*"$2"(.,@[1]) ]
+}
+
+function __zgenom_source() {
+    local source_file="${1}"
+    local repo_id
+
+    if [[ ! "${ZGEN_LOADED[@]}" =~ "${source_file}" ]]; then
+        if [[ -z "${repo}" ]]; then
+            repo_id="/${${source_file:h}:t}"
+        elif [[ "${dir}" = *ohmyzsh* ]] || [[ "${dir}" = *oh-my-zsh* ]]; then
+            repo_id="${repo}/${file}"
+        else
+            repo_id="${repo}"
+        fi
+
+        ZGEN_LOADED+=("${source_file}")
+        ZGENOM_LOADED+=("${repo_id}")
+
+        if [[ -d "$dir/functions" ]]; then
+            __zgenom_add_to_fpath "$dir/functions"
+        else
+            __zgenom_add_to_fpath "${source_file:h}"
+        fi
+
+        zsh_loaded_plugins+=( "$repo_id" )
+        ZERO="${source_file}" source "${source_file}"
+    fi
+}
+
+function __zgenom_add_to_fpath() {
+    local completion_path="${1}"
+
+    # Add the directory to ZGEN_COMPLETIONS array if not present
+    if [[ ! "${ZGEN_COMPLETIONS[@]}" =~ ${completion_path} ]]; then
+        ZGEN_COMPLETIONS+=("${completion_path}")
+        fpath=("${completion_path}" $fpath)
+    fi
+}
+
 function zgenom-load() {
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`load` requires at least one parameter:'
@@ -11,7 +53,7 @@ function zgenom-load() {
         local repo="${1}"
         local file="${2}"
         local branch="${3}"
-        local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+        local dir="$(__zgenom_clone_dir ${repo} ${branch})"
         local location="${dir}/${file}"
         location=${location%/}
 
@@ -20,37 +62,37 @@ function zgenom-load() {
 
     # source the file
     if [[ -f "${location}" ]]; then
-        -zgen-source "${location}"
+        __zgenom_source "${location}"
 
     # Prezto modules have init.zsh files
     elif [[ -f "${location}/init.zsh" ]]; then
-        -zgen-source "${location}/init.zsh"
+        __zgenom_source "${location}/init.zsh"
 
     elif [[ -f "${location}.zsh-theme" ]]; then
-        -zgen-source "${location}.zsh-theme"
+        __zgenom_source "${location}.zsh-theme"
 
     elif [[ -f "${location}.theme.zsh" ]]; then
-        -zgen-source "${location}.theme.zsh"
+        __zgenom_source "${location}.theme.zsh"
 
     elif [[ -f "${location}.zshplugin" ]]; then
-        -zgen-source "${location}.zshplugin"
+        __zgenom_source "${location}.zshplugin"
 
     elif [[ -f "${location}.zsh.plugin" ]]; then
-        -zgen-source "${location}.zsh.plugin"
+        __zgenom_source "${location}.zsh.plugin"
 
     # Classic ohmyzsh plugins have foo.plugin.zsh
-    elif -zgen-path-contains "${location}" ".plugin.zsh" ; then
-        for script (${location}/*\.plugin\.zsh(N)) -zgen-source "${script}"
+    elif __zgenom_path_contains "${location}" ".plugin.zsh" ; then
+        for script (${location}/*\.plugin\.zsh(N)) __zgenom_source "${script}"
 
-    elif -zgen-path-contains "${location}" ".zsh" ; then
-        for script (${location}/*\.zsh(N)) -zgen-source "${script}"
+    elif __zgenom_path_contains "${location}" ".zsh" ; then
+        for script (${location}/*\.zsh(N)) __zgenom_source "${script}"
 
-    elif -zgen-path-contains "${location}" ".sh" ; then
-        for script (${location}/*\.sh(N)) -zgen-source "${script}"
+    elif __zgenom_path_contains "${location}" ".sh" ; then
+        for script (${location}/*\.sh(N)) __zgenom_source "${script}"
 
     # Completions
     elif [[ -d "${location}" ]]; then
-        -zgen-add-to-fpath "${location}"
+        __zgenom_add_to_fpath "${location}"
 
     else
         if [[ -d ${dir:-$location} ]]; then

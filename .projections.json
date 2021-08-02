@@ -5,6 +5,7 @@
     "type": "api",
     "template": ["#!/usr/bin/env zsh", "", "function zgenom-{}() {", "    ", "}", "", "zgenom-{} $@"]
   },
+  "functions/__zgenom": { "type": "private" },
   "functions/__zgenom_*": {
     "type": "private",
     "template": ["#!/usr/bin/env zsh", "", "function __zgenom_{}() {", "    ", "}", "", "__zgenom_{} $@"]

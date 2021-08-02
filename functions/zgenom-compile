@@ -1,12 +1,19 @@
 #!/usr/bin/env zsh
 
+function __zgenom_compile() {
+    local file=$1
+    if [ ! $file.zwc -nt $file ] && [[ -r $file ]]; then
+        zcompile -U $file
+    fi
+}
+
 function zgenom-compile() {
     local inp=$1
     if [ -z $inp ]; then
         __zgenom_err '`compile` requires one parameter:'
         __zgenom_err '`zgenom compile <location>`'
     elif [ -f $inp ]; then
-        -zgen-compile $inp
+        __zgenom_compile $inp
     else
         setopt localoptions nullglob
         for file in $inp/**/*
@@ -34,7 +41,7 @@ function zgenom-compile() {
                 fi
             fi
 
-            -zgen-compile $file
+            __zgenom_compile $file
         done
     fi
 }

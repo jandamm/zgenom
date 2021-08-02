@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+function __zgenom_encode_url() {
+    # Remove characters from a url that don't work well in a filename.
+    # Inspired by -anti-get-clone-dir() method from antigen.
+    local url="${1}"
+    url="${url//\//-SLASH-}"
+    url="${url//\:/-COLON-}"
+    url="${url//\|/-PIPE-}"
+    url="${url//~/-TILDE-}"
+    __zgenom_out "$url"
+}
+
+function __zgenom_clone_dir() {
+    local repo="${1}"
+    local branch="${2:-___}"
+    local separator="${3:-/}"
+
+    if [[ -e "${repo}/.git" ]]; then
+        __zgenom_out "${ZGEN_DIR}/local/${repo:t}${separator}${branch}"
+    else
+        # Repo directory will be location/reponame
+        local reponame="${repo:t}"
+        # Need to encode incase it is a full url with characters that don't
+        # work well in a filename.
+        local location="$(__zgenom_encode_url ${repo:h})"
+        repo="${location}/${reponame}"
+        __zgenom_out "${ZGEN_DIR}/${repo}${separator}${branch}"
+    fi
+}
+
+__zgenom_clone_dir $@

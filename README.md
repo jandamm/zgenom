@@ -499,3 +499,8 @@ I personally wouldn't want this so this is off by default. Please set
 - [antigen](https://github.com/zsh-users/antigen) - popular and mature
 - [zplug](https://github.com/b4b4r07/zplug) - well performing and has a fancy UI
 - [zinit](https://github.com/zdharma/zinit) - very much magic and a turbo mode
+
+## Feedback
+
+If you like this plugin, star it! It's a great way of getting feedback. The same
+goes for reporting issues or feature requests.

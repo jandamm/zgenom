@@ -51,15 +51,29 @@ fi
 
 ### Migration from zgen
 
-To get started you just have to clone this repository instead of zgen or you
-change remotes.
+The quickest way would be to just use a new remote. This way no plugins have to
+be cloned again.
 
-This will take care that all files including the compdump are compiled after
-you run `zgenom reset` once. Besides this automatic compiling you can use zgenom
-to compile your dotfiles as well. (see below)
+```zsh
+cd $ZGEN_SOURCE
+git remote add zgenom https://github.com/jandamm/zgenom.git
+git fetch zgenom
+git switch main
+zgen reset
+```
 
-To enable lazy loading change `source "${HOME}/.zgen/zgen.zsh"` to `source
-"${HOME}/.zgen/zgenom.zsh"`.
+When you start a new shell your plugins will be migrated. You don't have to
+change your `.zshrc`.
+
+The preferred way would be to just delete zgen and start fresh.
+
+**Note:** If you keep `~/.zgen` around, zgenom will use it to store the plugins
+in there. So please `rm` or `mv` the folder before starting a new shell.
+(Otherwise the plugins will be migrated - with a prompt)
+
+If you've specified branches (e.g. `main`) you can probably remove those since
+zgenom should take care of picking the right branch for you. Unless you're
+using a "pre-release" branch.
 
 **Note:** While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
 and `oh-my-zsh` can be used interchangeably.
@@ -163,7 +177,7 @@ probably a better idea to always load the plugin instead.
 - Compiling your sourced scripts.
 - Add `zgenom compile` in case you want to recursively compile your dotfiles (manually).
 - Add `zgenom bin` to add an executable to your `$PATH`.
-- Lazy loading zgenom by sourcing `zgenom.zsh` instead of `zgen.zsh`.
+- Lazy loading zgenom - only the bare minimum you need for the current shell is loaded.
 - The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom`
   to (except when you have `~/.zgen` for backwards compatibility).
 - Allow cloning without submodules `zgenom clone <repo> --no-submodules`.

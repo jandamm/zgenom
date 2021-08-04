@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+
+function __zgenom_git_pull_fatal() {
+    __zgenom_err
+    __zgenom_err "Could not find default branch."
+    __zgenom_err "Please delete the repos folder and let zgenom clone it again."
+    __zgenom_err
+}
+
+function __zgenom_git_fetch_head() {
+    local result
+    local branch
+    if ! result=$(git remote set-head origin --auto 2>&1); then
+        branch="${result#*refs/remotes/origin/}"
+        [[ $result = $branch ]] && return 1
+        branch="${branch% *}"
+        git config remote.origin.fetch +refs/heads/"$branch":refs/remotes/origin/"$branch"  # Update config to point to new head
+        git fetch --depth=1 origin                                                          # Fetch the new head
+        git remote set-head origin --auto &>/dev/null                                       # Retry setting the new head
+        return $?
+    fi
+}
+
+function __zgenom_git_pull() {
+    if [[ ! "$repo" =~ '-___$' ]]; then
+        git pull --ff-only
+    else
+        local head
+        if __zgenom_git_fetch_head && head=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null); then
+            local branch="${head#refs/remotes/origin/}"
+            if [[ "$branch" = "$head" ]]; then
+                __zgenom_git_pull_fatal
+                return
+            fi
+
+            local curbranch="$(git rev-parse --abbrev-ref HEAD)"
+            if [[ "$branch" = "$curbranch" ]]; then
+                # Current head is current branch.
+                git pull --ff-only
+            else
+                __zgenom_out
+                __zgenom_out "New default branch: '$branch'."
+                git branch --quiet -D "$branch" &>/dev/null             # delete existing new head
+                git checkout --quiet -b "$branch" "$head"               # checkout new head from origin
+                git branch --quiet -D "$curbranch"                      # delete old local branch
+                git branch --quiet --remotes -d "origin/$curbranch"     # delete old origin branch
+            fi
+        else
+            __zgenom_git_pull_fatal
+        fi
+    fi
+}
+
+function zgenom-update() {
+    setopt localoptions extended_glob nullglob
+    for repo in $ZGEN_DIR/**/*/.git/; do
+        repo="${repo%/.git/}"
+        __zgenom_err "Updating '${repo#$ZGEN_DIR/}' ..."
+        (cd "${repo}" \
+            && __zgenom_git_pull \
+            && git submodule update --recursive)
+        __zgenom_out ''
+    done
+
+    zgenom-reset
+    date +%s >! "$ZGEN_DIR/.zgenom-plugin-lastupdate"
+}
+
+zgenom-update $@

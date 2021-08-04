@@ -1,0 +1,28 @@
+#!/usr/bin/env zsh
+
+# Autoload all functions
+setopt localoptions extendedglob
+for func in $ZGEN_SOURCE/functions/(__|)zgenom(-|_)*~*.zwc; do
+    autoload -Uz ${func:t}
+done
+
+# Set all options
+source "$ZGEN_SOURCE/options.zsh"
+
+function __zgenom() {
+    local cmd="$1"
+    if [[ -z "$cmd" || $cmd = '--help' ]]; then
+        zgenom-help
+        return 1
+    fi
+    if functions zgenom-$cmd &> /dev/null ; then
+        shift
+        zgenom-$cmd $@
+    else
+        __zgenom_err 'Command not found: `'"$cmd"\`
+        zgenom-help
+        return 1
+    fi
+}
+
+__zgenom $@

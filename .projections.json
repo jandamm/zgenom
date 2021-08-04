@@ -3,11 +3,12 @@
   "options.zsh": { "type": "option" },
   "functions/zgenom-*": {
     "type": "api",
-    "template": ["#!/usr/bin/env zsh", "", "function zgenom-{}() {", "\t", "}", "", "zgenom-{} $@"]
+    "template": ["#!/usr/bin/env zsh", "", "function zgenom-{}() {", "    ", "}", "", "zgenom-{} $@"]
   },
-  "functions/zgenom_*": {
+  "functions/__zgenom": { "type": "private" },
+  "functions/__zgenom_*": {
     "type": "private",
-    "template": ["#!/usr/bin/env zsh", "", "function zgenom_{}() {", "\t", "}", "", "zgenom_{} $@"]
+    "template": ["#!/usr/bin/env zsh", "", "function __zgenom_{}() {", "    ", "}", "", "__zgenom_{} $@"]
   },
   "functions/_zgenom": { "type": "completion" },
   "README.md": { "type": "readme" }

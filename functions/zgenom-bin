@@ -1,0 +1,53 @@
+#!/usr/bin/env zsh
+
+function __zgenom_bin() {
+    local file="${1}"
+    local name="${2}"
+    if [[ -z $name ]]; then
+        name=${file##*/}
+    fi
+    destination="$ZGENOM_SOURCE_BIN/$name"
+    if [[ ! -e $destination ]]; then
+        ln -s $file $destination
+    fi
+}
+
+function zgenom-bin() {
+    if [[ "$#" == 0 ]]; then
+        __zgenom_err '`bin` requires at least one parameter:'
+        __zgenom_err '`zgenom bin <repo> [location] [branch] [name]`'
+        return
+    fi
+    local repo="${1}"
+    local location="${2%/}"
+    local branch="${3}"
+    local name="${4}"
+    local dir="$(__zgenom_clone_dir ${repo} ${branch})"
+
+    zgenom-clone "${repo}" "${branch}"
+
+    if [[ ! -d $ZGENOM_SOURCE_BIN ]]; then
+        mkdir -p $ZGENOM_SOURCE_BIN
+    fi
+
+    if [[ -n $location ]]; then
+        location="${dir}/${location}"
+        if [[ -f "${location}" ]]; then
+            __zgenom_bin "${location}" $name
+            return
+        fi
+    elif [[ -d "${dir}/bin" ]]; then
+        location="${dir}/bin"
+    else
+        location="${dir}"
+    fi
+
+    setopt localoptions nullglob
+    for file in ${location}/*; do
+        if [[ -x $file ]]; then
+            __zgenom_bin "$file"
+        fi
+    done
+}
+
+zgenom-bin $@

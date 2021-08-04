@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+function __zgenom_out() {
+    printf '%s\n' $@
+}
+
+__zgenom_out $@

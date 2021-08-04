@@ -1,0 +1,79 @@
+#!/usr/bin/env zsh
+
+function __zgenom_get_clone_url() {
+    local repo="${1}"
+
+    if [[ -e "${repo}/.git" ]]; then
+        __zgenom_out "${repo}"
+    else
+        # Sourced from antigen url resolution logic.
+        # https://github.com/zsh-users/antigen/blob/master/antigen.zsh
+        # Expand short github url syntax: `username/reponame`.
+        if [[ $repo != git://* &&
+              $repo != https://* &&
+              $repo != http://* &&
+              $repo != ssh://* &&
+              $repo != git@*:*/*
+              ]]; then
+            repo="https://github.com/${repo%.git}.git"
+        fi
+        __zgenom_out "${repo}"
+    fi
+}
+
+function __zgenom_migrate_dir() {
+    local dir="${1}"
+    local repo="${2}"
+    local branch="${3}"
+    command mkdir -p ${dir%/*} && command mv $(__zgenom_clone_dir "${repo}" "${branch}" -) $dir
+}
+
+function zgenom-clone() {
+    local repo="${1}"
+    local submodules='--recursive'
+    if [[ $2 = '--no-submodules' ]]; then
+        submodules=''
+        shift
+    elif [[ $3 = '--no-submodules' ]]; then
+        submodules=''
+    fi
+    local branch="${2}"
+    local url="$(__zgenom_get_clone_url ${repo})"
+    local dir="$(__zgenom_clone_dir ${repo} ${branch})"
+
+    ZGENOM_PLUGINS+=("${repo}/${branch:-___}")
+
+    if [[ -d "${dir}" ]]; then
+        return # Everything is fine!
+
+    elif [[ -d "$(__zgenom_clone_dir "${repo}" "${branch}" -)" ]]; then
+        __zgenom_migrate_dir "$dir" "$repo" "$branch"
+
+    elif [[ -z "$branch" ]] && [[ -d "$(__zgenom_clone_dir "${repo}" master -)" ]]; then
+        local answer
+        if [[ -z "$_ZGENOM_MIGRATE_ALL" ]]; then
+            __zgenom_out "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."
+            __zgenom_out "Do you want to migrate '$repo - master' to use the default branch?"
+            __zgenom_out "If you say no, the repo will be cloned again. If you say quit, zgenom will be stopped."
+            read "answer?(y/n/a/q): "
+        else
+            answer='y'
+        fi
+        case $answer in
+            [Yy]) __zgenom_migrate_dir "$dir" "$repo" "master" ;;
+            [Aa]) _ZGENOM_MIGRATE_ALL=1 && __zgenom_migrate_dir "$dir" "$repo" "master" ;;
+            [Nn]) zgenom-clone "$repo" '___' "${submodules:---no-submodules}" ;;
+            *)    kill -s SIGINT $! ;;
+        esac
+
+    else
+        command mkdir -p "${dir}"
+        if [[ -n "$branch" ]] && [[ ! "$branch" = '___' ]]; then
+            eval "git clone --depth=1 $submodules -b $branch $url $dir"
+        else
+            eval "git clone --depth=1 $submodules $url $dir"
+        fi
+    fi
+}
+
+zgenom-clone $@

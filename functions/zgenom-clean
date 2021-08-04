@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+function zgenom-clean() {
+    local repo_dir repo
+
+    setopt localoptions nullglob
+    for repo_dir in $ZGEN_DIR/**/*/.git/; do
+        repo_dir="${repo_dir%/.git/}"
+        repo="${repo_dir#$ZGEN_DIR/}"
+        if [[ ! ${ZGENOM_PLUGINS[@]} =~ $repo ]]; then
+            rm -drf "$repo_dir" && __zgenom_out "Removing '$repo'."
+        fi
+    done
+}
+
+zgenom-clean $@

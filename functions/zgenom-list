@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+function zgenom-list() {
+    if [[ $1 = 'bin' ]]; then
+        ls $ZGENOM_SOURCE_BIN
+    elif [[ -f "${ZGEN_INIT}" ]]; then
+        cat "${ZGEN_INIT}"
+    else
+        __zgenom_err '`init.zsh` missing, please use `zgenom save` and then restart your shell.'
+        return 1
+    fi
+}
+
+zgenom-list $@

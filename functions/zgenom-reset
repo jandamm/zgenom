@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+function zgenom-reset() {
+    __zgenom_err 'Deleting `'"${ZGEN_INIT}"'` ...'
+
+    if [[ -f "${ZGEN_INIT}" ]]; then
+        rm "${ZGEN_INIT}"
+    fi
+
+    if [[ -f "${ZGEN_CUSTOM_COMPDUMP}" ]] || [[ -d "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
+        __zgenom_err 'Deleting `'"${ZGEN_CUSTOM_COMPDUMP}"'` ...'
+        rm -r "${ZGEN_CUSTOM_COMPDUMP}"
+    fi
+
+    if [[ -d $ZGENOM_SOURCE_BIN ]]; then
+        __zgenom_err 'Deleting `'"$ZGENOM_SOURCE_BIN"'` ...'
+        rm -dr $ZGENOM_SOURCE_BIN
+    fi
+}
+
+zgenom-reset $@

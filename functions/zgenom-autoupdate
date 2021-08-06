@@ -29,7 +29,7 @@ function zgenom-autoupdate() {
     #       backgrounded shell.
     #       That's why I decided not to keep it this way.
     local self plugin verbose background
-    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background || return
 
     if [[ -z $self ]] && [[ -z $plugin ]]; then
         if [[ -n $1 && $1 -lt 1 ]]; then
@@ -55,7 +55,7 @@ function zgenom-autoupdate() {
 
             # Updating kills the migration process in some terminals...
             # E.g. neovims builtin terminal emulator.
-            [[ -z $_ZGENOM_NEEDS_MIGRATION ]] || return
+            [[ -z $_ZGENOM_NEEDS_MIGRATION ]] || return 0
 
             # Retrieve state
             local self=$_ZGENOM_SELF && unset _ZGENOM_SELF

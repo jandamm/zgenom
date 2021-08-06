@@ -77,7 +77,7 @@ function zgenom-autoupdate() {
             ) &!
         }
 
-        # Store state
+        # Save state
         _ZGENOM_SELF=$self
         _ZGENOM_PLUGIN=$plugin
         _ZGENOM_VERBOSE=$verbose

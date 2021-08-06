@@ -145,8 +145,8 @@ EOPLUGINS
     zgenom compile $ZDOTDIR
 
     # You can perform other "time consuming" maintenance tasks here as well.
-    # When you are using `zgenom autoupdate --background` you're making sure
-    # they get executed every 7 days.
+    # If you use `zgenom autoupdate --background` you're making sure it gets
+    # executed every 7 days.
 
     # rbenv rehash
 fi
@@ -361,6 +361,9 @@ zgenom save
 It is recommended to save the plugin sourcing part to a static init script so
 we don't have to go through the time consuming installing/updating part every
 time we start the shell (or source .zshrc)
+
+If you don't want use a init script call `zgenom apply` after you've loaded all
+plugins. It'll take care of compinit and adding the loaded bins to your PATH.
 
 #### Remove init script
 

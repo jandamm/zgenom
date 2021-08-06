@@ -1,27 +1,22 @@
 #!/usr/bin/env zsh
 
-function __zgenom_check_interval() {
+function __zgenom_should_autoupdate() {
+    local days=$1
+    local file="$ZGEN_DIR/.zgenom-$2-lastupdate"
     local last_update
-    if [[ ! -f $1 ]]; then
+    if [[ ! -f $file ]]; then
         # We've never run, set the last run time to the dawn of time, or at
         # least the dawn of posix time.
-        last_update=0
-        printf 0 > $1
+        printf 0 > $file
+        last_update=$now
     else
-        read -r last_update < $1
+        last_update=$(( $now - $(< $file) - $days * 86400 ))
     fi
-    expr $2 - $last_update
-}
 
-function __zgenom_should_autoupdate() {
-    local min_interval=$(( $1 * 86400 )) # days to seconds
-    local last_update=$(__zgenom_check_interval "$ZGEN_DIR/.zgenom-$2-lastupdate" $3)
-
-    if [[ $last_update -gt $min_interval ]]; then
-        if [[ -n "$4" ]]; then
-            local days=$(( $last_update / 86400 ))
-            if [[ $days -le 18840 ]]; then
-                __zgenom_out "It has been $days days since your last $2 update."
+    if [[ $last_update -ge 0 ]]; then
+        if [[ -n $verbose ]]; then
+            if [[ $last_update -ne $now ]]; then
+                __zgenom_out "It has been $(( $last_update / 86400 + $days)) days since your last $2 update."
             else
                 __zgenom_out "Never automatically updated '$2'."
             fi
@@ -39,10 +34,10 @@ function __zgenom_should_autoupdate() {
 # Using ls and awk instead of stat because stat has incompatible arguments
 # on linux, macOS and FreeBSD.
 function __zgenom_autoupdate() {
-    local zgen_owner=$(command ls -ld $ZGEN_DIR | awk '{print $3}')
+    local zgenom_owner=$(command ls -ld $ZGEN_DIR | awk '{print $3}')
     local updated=0
 
-    if [[ "$zgen_owner" == "$USER" ]]; then
+    if [[ "$zgenom_owner" == "$USER" ]]; then
         zmodload zsh/system
         local lockfile="$HOME/.zgenom-autoupdate-lock"
         printf '' > "$lockfile"
@@ -50,17 +45,15 @@ function __zgenom_autoupdate() {
             local now=$(command date '+%s')
 
             # Update self
-            if [[ -n $self ]] && __zgenom_should_autoupdate $self system $now $verbose; then
+            if [[ -n $self ]] && __zgenom_should_autoupdate $self system; then
                 [[ -n $verbose ]] && __zgenom_err "Updating zgenom ..."
-                zgenom selfupdate --no-reset && __zgenom_out
-                updated=1
+                zgenom selfupdate --no-reset && __zgenom_out && updated=1
             fi
 
             # Update plugins
-            if [[ -n $plugin ]] && __zgenom_should_autoupdate $plugin plugin $now $verbose; then
+            if [[ -n $plugin ]] && __zgenom_should_autoupdate $plugin plugin; then
                 [[ -n $verbose ]] && __zgenom_err "Updating plugins ..."
-                zgenom update --no-reset
-                updated=1
+                zgenom update --no-reset && updated=1
             fi
 
             [[ $updated -ge 1 ]] && zgenom reset && __zgenom_out

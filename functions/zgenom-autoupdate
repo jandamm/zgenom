@@ -64,11 +64,14 @@ function zgenom-autoupdate() {
 
             # Dispatch update in the background
             (
+                # Some plugins (e.g. romkatv/gitstatus) may raise issues with
+                # `zsh -il -c exit` since it isn't really an interactive shell.
+                # Hence a non interactive shell sourcing .zshrc is used.
+                local cmd="source ${${${(q)${ZDOTDIR:-~}}/#${(q)home}/'~'}//\%/%%}/.zshrc"
                 local log=$(
-                    local zshrc=${${${(q)${ZDOTDIR:-~}}/#${(q)home}/'~'}//\%/%%}/.zshrc
                     __zgenom_autoupdate 2>&1 \
                         && printf 'Recreating init.zsh\n\n' \
-                        && _ZGENOM_JUST_INIT=1 zsh -c "source $zshrc" 2>&1
+                        && _ZGENOM_JUST_INIT=1 zsh -c $cmd 2>&1
                 )
                 [[ -n $log ]] && printf '%s\n\n' $log > "$ZGEN_SOURCE/.last_autoupdate_log"
             ) &!

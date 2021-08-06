@@ -90,7 +90,7 @@ and `oh-my-zsh` can be used interchangeably.
 source "${HOME}/.zgenom/zgenom.zsh"
 
 # Check for plugin and zgenom updates every 7 days
-# This does not reduce the startup time.
+# This does not increase the startup time.
 zgenom autoupdate --background
 
 # if the init script doesn't exist

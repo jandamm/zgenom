@@ -64,7 +64,7 @@ function zgenom-update() {
         __zgenom_out ''
     done
 
-    [[ -z $no_reset ]] && zgen-reset
+    [[ -z $no_reset ]] && zgenom-reset
     date +%s >! "$ZGEN_DIR/.zgenom-plugin-lastupdate"
 }
 

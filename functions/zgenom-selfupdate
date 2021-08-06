@@ -8,7 +8,7 @@ function zgenom-selfupdate() {
         if git pull; then
             if [[ -z $no_reset ]]; then
                 __zgenom_out
-                zgen-reset
+                zgenom-reset
             fi
             date +%s >! "$ZGEN_DIR/.zgenom-system-lastupdate"
         fi

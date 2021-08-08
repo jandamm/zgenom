@@ -1,25 +1,12 @@
 #!/usr/bin/env zsh
 
 function zgenom-help() {
-    __zgenom_out 'usage: `zgenom [command | instruction] [options]`'
-    __zgenom_out "    commands:      list, saved, reset, clone, update, selfupdate, clean,"
-    __zgenom_out "                   compile, autoupdate"
-    __zgenom_out "    instructions:  load, bin, ohmyzsh, pmodule, prezto, save, apply"
+    __zgenom_out 'usage: `zgenom [command] [options]`'
+    __zgenom_out "    commands:"
     __zgenom_out
-    __zgenom_out "    autoupdate:    update zgenom & your plugins periodically"
-    __zgenom_out "    bin:           clone and add files to PATH"
-    __zgenom_out "    clean:         remove all unused repositories"
-    __zgenom_out "    clone:         clone plugin from repository"
-    __zgenom_out "    compile:       compile files the given path"
-    __zgenom_out "    help:          print usage information"
-    __zgenom_out "    list:          print init.zsh"
-    __zgenom_out "    load:          clone and load plugin"
-    __zgenom_out "    ohmyzsh:       load ohmyzsh base"
-    __zgenom_out "    prezto:        load prezto base"
-    __zgenom_out "    reset:         delete the init.zsh script"
-    __zgenom_out "    save:          check for init.zsh script"
-    __zgenom_out "    selfupdate:    update zgenom framework from repository"
-    __zgenom_out "    update:        update all repositories and remove the init script"
+    printf       '    %s\n' ${"${(@f)$(< commands.txt)}"//\^/ }
+    __zgenom_out
+    __zgenom_out "    Please check the zsh completion to find out more about the options of commands."
 }
 
 zgenom-help $@

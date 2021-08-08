@@ -39,12 +39,6 @@ function __zgenom_should_autoupdate() {
 # Using ls and awk instead of stat because stat has incompatible arguments
 # on linux, macOS and FreeBSD.
 function __zgenom_autoupdate() {
-    # NOTE: This could be sped up by moving the background check before the
-    #       parameter checking.
-    #       This only reduces the startup time by ~1ms and
-    #       would result in errors not shown in the executing shell but in the
-    #       backgrounded shell.
-    #       That's why I decided not to keep it this way.
     local zgen_owner=$(command ls -ld $ZGEN_DIR | awk '{print $3}')
     local updated=0
 

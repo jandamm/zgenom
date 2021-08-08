@@ -2,10 +2,17 @@
 
 function zgenom-selfupdate() {
     if [[ -e "${ZGEN_SOURCE}/.git" ]]; then
-        (cd "${ZGEN_SOURCE}" \
-            && git pull) \
-            && zgenom-reset \
-            && date +%s >! "$ZGEN_DIR/.zgenom-system-lastupdate"
+        local no_reset
+        zparseopts -D -E -no-reset=no_reset
+        pushd -q "${ZGEN_SOURCE}"
+        if git pull; then
+            if [[ -z $no_reset ]]; then
+                __zgenom_out
+                zgenom-reset
+            fi
+            date +%s >! "$ZGEN_DIR/.zgenom-system-lastupdate"
+        fi
+        popd -q
     else
         __zgenom_err "Not running from a git repository; cannot automatically update."
         return 1

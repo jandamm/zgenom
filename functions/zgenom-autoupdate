@@ -1,83 +1,92 @@
 #!/usr/bin/env zsh
 
-__zgenom-check-interval() {
-    local last_update
-    if [[ ! -f $1 ]]; then
-        # We've never run, set the last run time to the dawn of time, or at
-        # least the dawn of posix time.
-        last_update=0
-        echo 0 > $1
-    else
-        read -r last_update < $1
-    fi
-    expr $2 - $last_update
-}
+# Prevent recursion when starting a shell in the background
+[[ -z $_ZGENOM_JUST_INIT ]] || return
 
-__zgenom-should-autoupdate() {
-    local min_interval=$(( $1 * 86400 )) # days to seconds
-    local last_update=$(__zgenom-check-interval "$ZGEN_DIR/.zgenom-$2-lastupdate" $3)
+# Show last log if it exists
+if [[ -s "$ZGEN_SOURCE/.last_autoupdate_log" ]]; then
+    function __zgenom_autoupdate_log() {
+        add-zsh-hook -d precmd __zgenom_autoupdate_log
+        unfunction __zgenom_autoupdate_log
 
-    if [[ $last_update -gt $min_interval ]]; then
-        if [[ -n "$4" ]]; then
-            echo "It has been $(( $last_update / 86400 )) days since your last $2 update."
-        fi
-        return 0
-    fi
-    return 1
-}
+        printf '\n%s\n--------\n' 'Last zgenom autoupdate log:'
+        printf '%s\n' "${(@f)$(<$ZGEN_SOURCE/.last_autoupdate_log)}"
+        printf '--------\n'
+        printf '' > "$ZGEN_SOURCE/.last_autoupdate_log"
+    }
 
-# Don't update if we're running as different user than whoever
-# owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
-# files & directories in ZGEN_DIR that will break future update
-# runs by the user.
-#
-# Using ls and awk instead of stat because stat has incompatible arguments
-# on linux, macOS and FreeBSD.
+    # A precmd hook is needed since some terminals swallow output of shell startup.
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd __zgenom_autoupdate_log
+fi
+
+autoload -Uz __zgenom_autoupdate
 function zgenom-autoupdate() {
-    local self plugin verbose
-    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose
+    # NOTE: This could be sped up by moving the background check before the
+    #       parameter checking.
+    #       This only reduces the startup time by ~1ms and
+    #       would result in errors not shown in the executing shell but in the
+    #       backgrounded shell.
+    #       That's why I decided not to keep it this way.
+    local self plugin verbose background
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background || return
 
     if [[ -z $self ]] && [[ -z $plugin ]]; then
+        if [[ -n $1 && $1 -lt 1 ]]; then
+            __zgenom_err "You must specify an integer number of days, greater than zero."
+            return 1
+        fi
         self=${1:-7}
-        plugin=${1:-7}
+        plugin=$self
     else
         [[ -n $self ]] && self=$self[2]
         [[ -n $plugin ]] && plugin=$plugin[2]
+        if [[ -n $self && $self -lt 1 ]] || [[ -n $plugin && $plugin -lt 1 ]]; then
+            __zgenom_err "You must specify an integer number of days, greater than zero."
+            return 1
+        fi
     fi
     verbose=${verbose:-$ZGENOM_AUTOUPDATE_VERBOSE}
 
-    if [[ -n $self && $self -lt 1 ]] || [[ -n $plugin && $plugin -lt 1 ]]; then
-        echo "You must specify an integer number of days, greater than zero."
-        return 1
-    fi
+    if [[ -n  $background ]]; then
+        function __zgenom_autoupdate_background() {
+            add-zsh-hook -d precmd __zgenom_autoupdate_background
+            unfunction __zgenom_autoupdate_background
 
-    local zgen_owner=$(ls -ld $ZGEN_DIR | awk '{print $3}')
+            # Updating kills the migration process in some terminals...
+            # E.g. neovims builtin terminal emulator.
+            [[ -z $_ZGENOM_NEEDS_MIGRATION ]] || return 0
 
-    if [[ "$zgen_owner" == "$USER" ]]; then
-        zmodload zsh/system
-        local lockfile="$HOME/.zgenom-autoupdate-lock"
-        printf '' > "$lockfile"
-        if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
-            local now=$(command date '+%s')
+            # Retrieve state
+            local self=$_ZGENOM_SELF && unset _ZGENOM_SELF
+            local plugin=$_ZGENOM_PLUGIN && unset _ZGENOM_PLUGIN
+            local verbose=$_ZGENOM_VERBOSE && unset _ZGENOM_VERBOSE
 
-            # Update self
-            if [[ -n $self ]] && __zgenom-should-autoupdate $self system $now $verbose; then
-                [[ -n $verbose ]] && echo "Updating zgenom..."
-                zgenom selfupdate
-            fi
+            # Dispatch update in the background
+            (
+                # Some plugins (e.g. romkatv/gitstatus) may raise issues with
+                # `zsh -il -c exit` since it isn't really an interactive shell.
+                # Hence a non interactive shell sourcing .zshrc is used.
+                local cmd="source ${${${(q)${ZDOTDIR:-~}}/#${(q)home}/'~'}//\%/%%}/.zshrc"
+                local log=$(
+                    __zgenom_autoupdate 2>&1 \
+                        && printf 'Recreating init.zsh\n\n' \
+                        && _ZGENOM_JUST_INIT=1 zsh -c $cmd 2>&1
+                )
+                [[ -n $log ]] && printf '%s\n\n' $log > "$ZGEN_SOURCE/.last_autoupdate_log"
+            ) &!
+        }
 
-            # Update plugins
-            if [[ -n $plugin ]] && __zgenom-should-autoupdate $plugin plugin $now $verbose; then
-                [[ -n $verbose ]] && echo "Updating plugins..."
-                zgenom update
-            fi
+        # Save state
+        _ZGENOM_SELF=$self
+        _ZGENOM_PLUGIN=$plugin
+        _ZGENOM_VERBOSE=$verbose
 
-            command rm -f "$lockfile"
-        fi
+        # Schedule update right before the first prompt is drawn.
+        autoload -Uz add-zsh-hook
+        add-zsh-hook precmd __zgenom_autoupdate_background
     else
-        if [[ -n "$DEBUG" ]]; then
-            echo "Skipping autoupdate of plugins because $USER doesn't own $ZGEN_DIR."
-        fi
+        __zgenom_autoupdate
     fi
 }
 

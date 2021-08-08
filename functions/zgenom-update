@@ -52,6 +52,8 @@ function __zgenom_git_pull() {
 }
 
 function zgenom-update() {
+    local no_reset
+    zparseopts -D -E -no-reset=no_reset
     setopt localoptions extended_glob nullglob
     for repo in $ZGEN_DIR/**/*/.git/; do
         repo="${repo%/.git/}"
@@ -62,7 +64,7 @@ function zgenom-update() {
         __zgenom_out ''
     done
 
-    zgenom-reset
+    [[ -z $no_reset ]] && zgenom-reset
     date +%s >! "$ZGEN_DIR/.zgenom-plugin-lastupdate"
 }
 

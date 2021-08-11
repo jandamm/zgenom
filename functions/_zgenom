@@ -21,7 +21,7 @@ function _zgenom() {
     case $state in
         cmd)
             local -a commands
-            for line in "${(@f)$(< commands.txt)}"; do
+            for line in "${(@f)$(< $ZGEN_SOURCE/commands.txt)}"; do
                 commands+=( "${line//\^/}" )
             done
             _describe -t commands 'command' commands "$@"

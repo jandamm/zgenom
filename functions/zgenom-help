@@ -4,7 +4,7 @@ function zgenom-help() {
     __zgenom_out 'usage: `zgenom [command] [options]`'
     __zgenom_out "    commands:"
     __zgenom_out
-    printf       '    %s\n' ${"${(@f)$(< commands.txt)}"//\^/ }
+    printf       '    %s\n' ${"${(@f)$(< $ZGEN_SOURCE/commands.txt)}"//\^/ }
     __zgenom_out
     __zgenom_out "    Please check the zsh completion to find out more about the options of commands."
 }

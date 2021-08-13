@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# Bail out when zsh/system is not available
+zmodload zsh/system || return 0 # Return 0 since 0 is no update
+
 function __zgenom_should_autoupdate() {
     local days=$1
     local file="$ZGEN_DIR/.zgenom-$2-lastupdate"
@@ -38,10 +41,9 @@ function __zgenom_autoupdate() {
     local updated=0
 
     if [[ "$zgenom_owner" == "$USER" ]]; then
-        zmodload zsh/system
         local lockfile="$HOME/.zgenom-autoupdate-lock"
         printf '' > "$lockfile"
-        if ! which zsystem &> /dev/null || zsystem flock -t 1 "$lockfile"; then
+        if zsystem flock -t 1 "$lockfile"; then
             local now=$(command date '+%s')
 
             # Update self

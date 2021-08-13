@@ -1,8 +1,9 @@
 #compdef zgenom
 
 function _zgenom_autoupdate() {
+    local days=(1 2 3 5 7 14)
     if [[ $words[-2] = '--plugin' || $words[-2] = '--self' ]]; then
-        _values 'interval in days' 1 2 3 5 7 10 14
+        _values 'interval in days' $days
     else
         local options=(
             '--background[update in the background]'
@@ -12,6 +13,15 @@ function _zgenom_autoupdate() {
             '-v[verbose logging while updating]'
         )
         _values -w options $options
+
+        # Don't complete numbers when a number was already entered
+        [[ $BUFFER = *[0-9]\ * ]] && return
+
+        case ${(q)words} in
+            # Only valid if neither --self or --plugins was entered
+            *--self*|*--plugins*) :;;
+            *) _values 'interval in days' $days ;;
+        esac
     fi
 }
 

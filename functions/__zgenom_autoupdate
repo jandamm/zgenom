@@ -1,7 +1,11 @@
 #!/usr/bin/env zsh
 
 # Bail out when zsh/system is not available
-zmodload zsh/system || return 0 # Return 0 since 0 is no update
+zmodload zsh/system || {
+    __zgenom_err 'Could not load `zsh/system` which is needed for autoupdate. Please create an issue.'
+     # Return 0 since 0 is no update
+    return 0
+}
 
 function __zgenom_should_autoupdate() {
     local days=$1

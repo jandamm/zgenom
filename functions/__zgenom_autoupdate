@@ -12,8 +12,7 @@ function __zgenom_should_autoupdate() {
     local file="$ZGEN_DIR/.zgenom-$2-lastupdate"
     local last_update
     if [[ ! -f $file ]]; then
-        # We've never run, set the last run time to the dawn of time, or at
-        # least the dawn of posix time.
+        # We've never run, create the lastupdate-file and set now as interval.
         printf 0 > $file
         last_update=$now
     else
@@ -22,10 +21,10 @@ function __zgenom_should_autoupdate() {
 
     if [[ $last_update -ge 0 ]]; then
         if [[ -n $verbose ]]; then
-            if [[ $last_update -ne $now ]]; then
-                __zgenom_out "It has been $(( $last_update / 86400 + $days)) days since your last $2 update."
-            else
+            if [[ $last_update -eq $now ]]; then
                 __zgenom_out "Never automatically updated '$2'."
+            else
+                __zgenom_out "It has been $(( $last_update / 86400 + $days)) days since your last $2 update."
             fi
         fi
         return 0
@@ -33,20 +32,20 @@ function __zgenom_should_autoupdate() {
     return 1
 }
 
-# Don't update if we're running as different user than whoever
-# owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
-# files & directories in ZGEN_DIR that will break future update
-# runs by the user.
-#
-# Using ls and awk instead of stat because stat has incompatible arguments
-# on linux, macOS and FreeBSD.
 function __zgenom_autoupdate() {
+    # Using ls and awk instead of stat because stat has incompatible arguments
+    # on linux, macOS and FreeBSD.
     local zgenom_owner=$(command ls -ld $ZGEN_DIR | awk '{print $3}')
     local updated=0
 
+    # Don't update if we're running as different user than whoever
+    # owns ZGEN_DIR. This prevents sudo runs from leaving root-owned
+    # files & directories in ZGEN_DIR that will break future update
+    # runs by the user.
     if [[ "$zgenom_owner" == "$USER" ]]; then
         local lockfile="$HOME/.zgenom-autoupdate-lock"
         printf '' > "$lockfile"
+        # Create lock
         if zsystem flock -t 1 "$lockfile"; then
             local now=$(command date '+%s')
 
@@ -62,8 +61,10 @@ function __zgenom_autoupdate() {
                 zgenom update --no-reset && updated=1
             fi
 
+            # Reset only when updated
             [[ $updated -ge 1 ]] && zgenom reset && __zgenom_out
 
+            # Remove lock file
             command rm -f "$lockfile"
         fi
     else

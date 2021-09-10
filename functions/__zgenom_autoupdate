@@ -44,8 +44,8 @@ function __zgenom_autoupdate() {
     if [[ "$zgenom_owner" == "$USER" ]]; then
         local lockfile="$HOME/.zgenom-autoupdate-lock"
         printf '' > "$lockfile"
-        # Create lock
-        if zsystem flock -t 1 "$lockfile"; then
+        # Create lock, don't retry to obtain a lock
+        if zsystem flock -t 0 "$lockfile" &>/dev/null; then
             local now=$(command date '+%s')
 
             # Update self
@@ -62,6 +62,9 @@ function __zgenom_autoupdate() {
 
             # Reset only when updated
             [[ $updated -ge 1 ]] && zgenom reset && __zgenom_out
+
+            # Release the lock
+            printf '' > "$lockfile"
 
             # Remove lock file
             command rm -f "$lockfile"

@@ -67,7 +67,7 @@ function __zgenom_autoupdate() {
             printf '' > "$lockfile"
 
             # Remove lock file
-            command rm -f "$lockfile"
+            { command rm -f "$lockfile" } &!
         fi
     else
         if [[ -n "$DEBUG" ]]; then

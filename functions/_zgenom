@@ -1,2 +1,49 @@
 #compdef zgenom
-_zgen
+
+function _zgenom_autoupdate() {
+    local days=(1 2 3 5 7 14)
+    if [[ $words[-2] = '--plugin' || $words[-2] = '--self' ]]; then
+        _values 'interval in days' $days
+    else
+        local options=(
+            '--background[update in the background]'
+            '--self[update zgenom every INT days]'
+            '--plugin[update plugins every INT days]'
+            '--verbose[verbose logging while updating]'
+            '-v[verbose logging while updating]'
+        )
+        _values -w options $options
+
+        # Don't complete numbers when a number was already entered
+        [[ $BUFFER = *[0-9]\ * ]] && return
+
+        case ${(q)words} in
+            # Only valid if neither --self or --plugins was entered
+            *--self*|*--plugins*) :;;
+            *) _values 'interval in days' $days ;;
+        esac
+    fi
+}
+
+function _zgenom() {
+    _arguments '1: :->cmd' '*: :->opts'
+
+    case $state in
+        cmd)
+            local -a commands
+            for line in "${(@f)$(< $ZGEN_SOURCE/commands.txt)}"; do
+                commands+=( "${line//\^/}" )
+            done
+            _describe -t commands 'command' commands "$@"
+            ;;
+        opts)
+            case $words[2] in
+                autoupdate) _zgenom_autoupdate;;
+                compile) _files;;
+                selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
+            esac
+            ;;
+    esac
+}
+
+_zgenom $@

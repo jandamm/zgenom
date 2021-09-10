@@ -1,0 +1,19 @@
+apply:^^^^^^^^^apply setup to current shell (only use if you don't use 'save')
+autoupdate:^^^^automatically check for updates of zgenom and plugins
+bin:^^^^^^^^^^^clone and add files to PATH
+clean:^^^^^^^^^remove all unused repositories
+clone:^^^^^^^^^clone plugin from repository
+compile:^^^^^^^compile files from the given path
+help:^^^^^^^^^^print usage information
+init:^^^^^^^^^^source the init.zsh
+list:^^^^^^^^^^print init.zsh or show installed bins
+load:^^^^^^^^^^clone and load plugin
+loadall:^^^^^^^clone and load plugins with heredoc
+ohmyzsh:^^^^^^^load ohmyzsh base
+pmodule:^^^^^^^load repo as prezto plugin
+prezto:^^^^^^^^load prezto base
+reset:^^^^^^^^^delete the init.zsh script
+save:^^^^^^^^^^create a init.zsh from currently loaded plugins
+saved:^^^^^^^^^source the init.zsh (error if it does not exist)
+selfupdate:^^^^update zgenom framework from repository
+update:^^^^^^^^update all repositories and remove the init script

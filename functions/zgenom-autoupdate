@@ -86,7 +86,8 @@ function zgenom-autoupdate() {
         autoload -Uz add-zsh-hook
         add-zsh-hook precmd __zgenom_autoupdate_background
     else
-        __zgenom_autoupdate
+        # Don't propagate error if not updated
+        __zgenom_autoupdate || true
     fi
 }
 

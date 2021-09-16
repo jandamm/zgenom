@@ -432,8 +432,8 @@ update every x days.
 
 Make sure to call it before you check for the init file with `zgenom saved`.
 
-**Note:** Using `zgenom autoupdate` increases the startup time around 30%
-(~30ms) in order to check if an update has to be done. This figure may vary
+**Note:** Using `zgenom autoupdate` increases the startup time around 17%
+(~16ms) in order to check if an update has to be done. This figure may vary
 depending on your plugins and machine. Use `--background` to remove the waiting
 time.
 

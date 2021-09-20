@@ -492,6 +492,15 @@ zsh file it can recursively find in `~/.zsh`. You might not want to add any of
 these lines to your `.zsrhc` but run them manually or automatically in the
 background.
 
+#### Safely access internal api
+
+Calling any function matching `__zgenom-*` is assumed unsafe and the function
+is considered private. So it may be renamed anytime without further notice.
+
+To provide a way to safely access some internal api `zgenom api` is introduced.
+Please use the zsh completion to check what parts of the internal api is
+exposed.
+
 </details>
 
 ## Notes
@@ -510,6 +519,30 @@ be disabled if you've already called `compinit` yourself before sourcing
 `$ZGEN_AUTOLOAD_COMPINIT`.
 
   [compinit]: <http://zsh.sourceforge.net/Doc/Release/Completion-System.html#Use-of-compinit> "Zsh manual 20.2.1: Use of compinit"
+
+## Extensions
+
+Extensions may be a bit of a stretch. Every function matching `zgenom-*` is
+callable like `zgenom *`. Every completion function matching `_zgenom_*` is
+called by `_zgenom`.
+
+Also `$ZGENOM_EXTENSIONS` can be used to add an entry to `zgenom help` and
+subcommand completion.
+
+To provide an extension called `abc` you define `zgenom-abc` in your plugin.
+Then you can add a description: `ZGENOM_EXTENSIONS+=('abc:Some description')`.
+To provide additional completions you can define `_zgenom_abc` which will be
+called when the prompt starts with `zgenom abc`.
+
+Existing extensions:
+
+- [release](https://github.com/jandamm/zgenom-ext-release): Use `zgenom` and
+  `gh` to download github releases.
+
+Please create a PR to add your extension here :)
+
+**Note:** It is not recommended to use the private api (`__zgenom-*`) since it
+may change without further notice. Use `zgenom api` instead.
 
 ## Other resources
 

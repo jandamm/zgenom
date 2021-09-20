@@ -31,16 +31,18 @@ function _zgenom() {
     case $state in
         cmd)
             local -a commands
+            commands=$ZGENOM_EXTENSIONS
             for line in "${(@f)$(< $ZGEN_SOURCE/commands.txt)}"; do
                 commands+=( "${line//\^/}" )
             done
             _describe -t commands 'command' commands "$@"
             ;;
         opts)
-            case $words[2] in
-                autoupdate) _zgenom_autoupdate;;
+            local subcmd=$words[2]
+            case $subcmd in
                 compile) _files;;
                 selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
+                *) functions _zgenom_$subcmd &> /dev/null && _zgenom_$subcmd "$@";;
             esac
             ;;
     esac

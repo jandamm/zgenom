@@ -25,7 +25,7 @@ function __zgenom_migrate_dir() {
     local dir="${1}"
     local repo="${2}"
     local branch="${3}"
-    command mkdir -p ${dir%/*} && command mv $(__zgenom_clone_dir "${repo}" "${branch}" -) $dir
+    command mkdir -p ${dir:h} && command mv $(__zgenom_clone_dir ${repo} --branch ${branch} --legacy) $dir
 }
 
 function zgenom-clone() {
@@ -39,17 +39,17 @@ function zgenom-clone() {
     fi
     local branch="${2}"
     local url="$(__zgenom_get_clone_url ${repo})"
-    local dir="$(__zgenom_clone_dir ${repo} ${branch})"
+    local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
 
     ZGENOM_PLUGINS+=("${repo}/${branch:-___}")
 
     if [[ -d "${dir}" ]]; then
         return # Everything is fine!
 
-    elif [[ -d "$(__zgenom_clone_dir "${repo}" "${branch}" -)" ]]; then
+    elif [[ -d "$(__zgenom_clone_dir ${repo} --branch ${branch} --legacy)" ]]; then
         __zgenom_migrate_dir "$dir" "$repo" "$branch"
 
-    elif [[ -z "$branch" ]] && [[ -d "$(__zgenom_clone_dir "${repo}" master -)" ]]; then
+    elif [[ -z "$branch" ]] && [[ -d "$(__zgenom_clone_dir ${repo} --branch master --legacy)" ]]; then
         local answer
         if [[ -z "$_ZGENOM_MIGRATE_ALL" ]]; then
             __zgenom_out "When you don't specify a branch with zgenom, instead of using 'master' the git default branch is used."

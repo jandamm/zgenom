@@ -2,7 +2,7 @@
 
 function zgenom-oh-my-zsh() {
     if [[ -z $ZSH ]]; then
-        ZSH="$(__zgenom_clone_dir "$ZGEN_OH_MY_ZSH_REPO" "$ZGEN_OH_MY_ZSH_BRANCH")"
+        ZSH="$(__zgenom_clone_dir $ZGEN_OH_MY_ZSH_REPO --branch $ZGEN_OH_MY_ZSH_BRANCH)"
     fi
 
     local file="${1:-oh-my-zsh.sh}"

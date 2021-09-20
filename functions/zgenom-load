@@ -53,7 +53,7 @@ function zgenom-load() {
         local repo="${1}"
         local file="${2}"
         local branch="${3}"
-        local dir="$(__zgenom_clone_dir ${repo} ${branch})"
+        local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
         local location="${dir}/${file}"
         location=${location%/}
 

@@ -12,9 +12,13 @@ function __zgenom_encode_url() {
 }
 
 function __zgenom_clone_dir() {
+    local branch legacy
+    zparseopts -D -E -branch::=branch -legacy=legacy
     local repo="${1}"
-    local branch="${2:-___}"
-    local separator="${3:-/}"
+    branch="${${branch[1]#--branch}:-___}"
+    local separator="${${legacy[1]:+-}:-/}"
+
+    [[ -z $repo ]] && __zgenom_err 'No repository name given.'
 
     if [[ -e "${repo}/.git" ]]; then
         __zgenom_out "${ZGEN_DIR}/local/${repo:t}${separator}${branch}"

@@ -1,5 +1,27 @@
 #compdef zgenom
 
+function _zgenom_api() {
+    _arguments '2: :->cmd' '*: :->opts'
+    case $state in
+        cmd)
+            local commands=(
+                'clone_dir[get directory where the repository is cloned to]'
+                'err[error method of zgenom]'
+                'out[output method of zgenom]'
+            )
+            _values -w commands $commands ;;
+        opts)
+            if [[ $words[3] = 'clone_dir' ]]; then
+                local options=(
+                    '--branch[define which branch to use (default: follow head)]'
+                    '--legacy[use the zgen naming pattern]'
+                )
+                _values -w options $options
+            fi
+            ;;
+    esac
+}
+
 function _zgenom_autoupdate() {
     local days=(1 2 3 5 7 14)
     if [[ $words[-2] = '--plugin' || $words[-2] = '--self' ]]; then

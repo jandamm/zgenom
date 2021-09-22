@@ -9,7 +9,8 @@ function zgenom-help() {
     __zgenom_out "    Please check the zsh completion to find out more about the options of commands."
     if [[ -n $ZGENOM_EXTENSIONS[1] ]]; then
         __zgenom_out
-        __zgenom_out '    commands provided by extensions:'
+        __zgenom_out 'installed extensions'
+        __zgenom_out '    commands:'
         __zgenom_out
         for cmd in $ZGENOM_EXTENSIONS; do
             printf   '    %s\n' ${cmd/:/: }

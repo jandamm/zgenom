@@ -26,3 +26,4 @@ function zgenom() {
 }
 
 alias zgen=zgenom
+typeset -a ZGENOM_EXTENSIONS

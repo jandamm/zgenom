@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+# This command provides a safe way to call parts of the internal api. In
+# general it is not recommended to manually call __zgenom_* functions since
+# they may not be loaded or some state may not be set.
+# Calling `zgenom api clone_dir` ensures a state where it is safe to call the
+# underlying function.
+function zgenom-api() {
+	[[ $# -eq 0 ]] && __zgenom_err 'No subcommand provided.' && return 1
+	local subcmd=$1; shift
+	case $subcmd in
+		clone_dir) __zgenom_clone_dir $@;;
+		err) __zgenom_err $@;;
+		out) __zgenom_out $@;;
+		*) __zgenom_err "Unknown api command: $subcmd." && return 1;;
+	esac
+}
+
+zgenom-api $@

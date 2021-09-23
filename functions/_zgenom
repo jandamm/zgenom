@@ -1,5 +1,27 @@
 #compdef zgenom
 
+function _zgenom_api() {
+    _arguments '2: :->cmd' '*: :->opts'
+    case $state in
+        cmd)
+            local commands=(
+                'clone_dir[get directory where the repository is cloned to]'
+                'err[error method of zgenom]'
+                'out[output method of zgenom]'
+            )
+            _values -w commands $commands ;;
+        opts)
+            if [[ $words[3] = 'clone_dir' ]]; then
+                local options=(
+                    '--branch[define which branch to use (default: follow head)]'
+                    '--legacy[use the zgen naming pattern]'
+                )
+                _values -w options $options
+            fi
+            ;;
+    esac
+}
+
 function _zgenom_autoupdate() {
     local days=(1 2 3 5 7 14)
     if [[ $words[-2] = '--plugin' || $words[-2] = '--self' ]]; then
@@ -31,16 +53,18 @@ function _zgenom() {
     case $state in
         cmd)
             local -a commands
+            commands=$ZGENOM_EXTENSIONS
             for line in "${(@f)$(< $ZGEN_SOURCE/commands.txt)}"; do
                 commands+=( "${line//\^/}" )
             done
             _describe -t commands 'command' commands "$@"
             ;;
         opts)
-            case $words[2] in
-                autoupdate) _zgenom_autoupdate;;
+            local subcmd=$words[2]
+            case $subcmd in
                 compile) _files;;
                 selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
+                *) functions _zgenom_$subcmd &> /dev/null && _zgenom_$subcmd "$@";;
             esac
             ;;
     esac

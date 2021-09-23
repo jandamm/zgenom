@@ -1,3 +1,4 @@
+api:^^^^^^^^^^^use parts of the internal api with a stable api
 apply:^^^^^^^^^apply setup to current shell (only use if you don't use 'save')
 autoupdate:^^^^automatically check for updates of zgenom and plugins
 bin:^^^^^^^^^^^clone and add files to PATH

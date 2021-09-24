@@ -32,6 +32,7 @@ function __zgenom_should_autoupdate() {
 }
 
 function __zgenom_autoupdate() {
+    emulate -L zsh
     # Using ls and awk instead of stat because stat has incompatible arguments
     # on linux, macOS and FreeBSD.
     local zgenom_owner=$(command ls -ld $ZGEN_DIR | awk '{print $3}')

@@ -22,7 +22,6 @@ fi
 
 autoload -Uz __zgenom_autoupdate
 function zgenom-autoupdate() {
-    emulate -L zsh
     # NOTE: This could be sped up by moving the background check before the
     #       parameter checking.
     #       This only reduces the startup time by ~1ms and

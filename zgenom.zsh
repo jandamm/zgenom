@@ -25,5 +25,5 @@ function zgenom() {
     esac
 }
 
-alias zgen=zgenom
+function zgen() zgenom $@
 typeset -a ZGENOM_EXTENSIONS

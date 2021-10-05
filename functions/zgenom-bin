@@ -2,14 +2,9 @@
 
 function __zgenom_bin() {
     local file="${1}"
-    local name="${2}"
-    if [[ -z $name ]]; then
-        name=${file##*/}
-    fi
-    destination="$ZGENOM_SOURCE_BIN/$name"
-    if [[ ! -e $destination ]]; then
-        ln -s $file $destination
-    fi
+    local name="${2:-${file:t}}"
+    local destination="$ZGENOM_SOURCE_BIN/$name"
+    if [[ ! -e $destination ]] ln -s $file $destination
 }
 
 function zgenom-bin() {
@@ -26,9 +21,7 @@ function zgenom-bin() {
 
     zgenom-clone "${repo}" "${branch}"
 
-    if [[ ! -d $ZGENOM_SOURCE_BIN ]]; then
-        mkdir -p $ZGENOM_SOURCE_BIN
-    fi
+    if [[ ! -d $ZGENOM_SOURCE_BIN ]] mkdir -p $ZGENOM_SOURCE_BIN
 
     if [[ -n $location ]]; then
         location="${dir}/${location}"

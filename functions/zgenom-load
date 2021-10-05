@@ -43,18 +43,19 @@ function __zgenom_add_to_fpath() {
 }
 
 function zgenom-load() {
+    local location
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`load` requires at least one parameter:'
         __zgenom_err '`zgenom load <repo> [location] [branch]`'
         return
     elif [[ "$#" == 1 && ("${1[1]}" == '/' || "${1[1]}" == '.' ) ]]; then
-        local location="${1}"
+        location="${1}"
     else
         local repo="${1}"
         local file="${2}"
         local branch="${3}"
         local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
-        local location="${dir}/${file}"
+        location="${dir}/${file}"
         location=${location%/}
 
         zgenom-clone "${repo}" "${branch}"

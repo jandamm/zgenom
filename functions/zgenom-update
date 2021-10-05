@@ -8,8 +8,7 @@ function __zgenom_git_pull_fatal() {
 }
 
 function __zgenom_git_fetch_head() {
-    local result
-    local branch
+    local result branch
     if ! result=$(git remote set-head origin --auto 2>&1); then
         branch="${result#*refs/remotes/origin/}"
         [[ $result = $branch ]] && return 1

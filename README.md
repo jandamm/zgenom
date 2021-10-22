@@ -97,8 +97,14 @@ zgenom autoupdate --background
 if ! zgenom saved; then
     echo "Creating a zgenom save"
 
-    # Ohmyzsh
+    # Ohmyzsh base library (comment out if you only want parts)
     zgenom ohmyzsh
+
+    # You can also cherry pick just parts of the library.
+    # This however might break things inside ohmyzsh.
+    # Remove `zgenom ohmyzsh` and load parts of ohmyzsh like this:
+    # `zgenom ohmyzsh path/to/file.zsh`
+    # zgenom ohmyzsh lib/git.zsh # load git library of ohmyzsh
 
     # plugins
     zgenom ohmyzsh plugins/git

@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
 # Prevent recursion when starting a shell in the background
-[[ -z $_ZGENOM_JUST_INIT ]] || return
+# Also prevent ohmyzsh updates in the background.
+[[ -z $_ZGENOM_JUST_INIT ]] || { DISABLE_AUTO_UPDATE=true  && return }
 
 # Show last log if it exists
 if [[ -s "$ZGEN_SOURCE/.last_autoupdate_log" ]]; then
@@ -28,8 +29,12 @@ function zgenom-autoupdate() {
     #       would result in errors not shown in the executing shell but in the
     #       backgrounded shell.
     #       That's why I decided not to keep it this way.
-    local self plugin verbose background
-    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background || return
+    local self plugin verbose background omz
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background -keep-ohmyzsh=omz || return
+
+    if [[ -z $omz ]]; then
+        : ${DISABLE_AUTO_UPDATE:=true}
+    fi
 
     if [[ -z $self ]] && [[ -z $plugin ]]; then
         if [[ -n $1 && $1 -lt 1 ]]; then

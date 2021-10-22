@@ -29,6 +29,7 @@ function _zgenom_autoupdate() {
     else
         local options=(
             '--background[update in the background]'
+            '--keep-ohmyzsh[keep ohmyzshs builtin autoupdate enabled]'
             '--self[update zgenom every INT days]'
             '--plugin[update plugins every INT days]'
             '--verbose[verbose logging while updating]'

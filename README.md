@@ -413,6 +413,9 @@ zgenom selfupdate
 
 #### Run updates automatically
 
+Using `autoupdate` disables ohmyzsh automatic updates since zgenom will do
+this. You can use `--keep-ohmyzsh` to not disable ohmyzsh automatic updates.
+
 ```zsh
 source path/to/zgenom.zsh
 

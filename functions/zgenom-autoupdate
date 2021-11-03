@@ -69,6 +69,7 @@ function zgenom-autoupdate() {
 
             # Dispatch update in the background
             (
+                function git() { command git -c 'color.ui=always' $@ }
                 # Some plugins (e.g. romkatv/gitstatus) may raise issues with
                 # `zsh -il -c exit` since it isn't really an interactive shell.
                 # Hence a non interactive shell sourcing .zshrc is used.

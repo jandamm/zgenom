@@ -16,9 +16,9 @@ shell session is started. This means that you have to manually check for
 updates (`zgenom update`) and reset the init script (`zgenom reset`) whenever
 you add or remove plugins.
 
-Zgenom does have a `zgenom autoupdate --background` which checks for updates
-periodically without startup penalty or having to wait for the plugins to
-update. See [here](#Run-updates-automatically) for more information.
+Zgenom does have a `zgenom autoupdate` which checks for updates periodically
+without startup penalty or having to wait for the plugins to update. See
+[here](#Run-updates-automatically) for more information.
 
 ## Installation
 
@@ -91,7 +91,7 @@ source "${HOME}/.zgenom/zgenom.zsh"
 
 # Check for plugin and zgenom updates every 7 days
 # This does not increase the startup time.
-zgenom autoupdate --background
+zgenom autoupdate
 
 # if the init script doesn't exist
 if ! zgenom saved; then
@@ -154,7 +154,7 @@ EOPLUGINS
     zgenom compile $ZDOTDIR
 
     # You can perform other "time consuming" maintenance tasks here as well.
-    # If you use `zgenom autoupdate --background` you're making sure it gets
+    # If you use `zgenom autoupdate` you're making sure it gets
     # executed every 7 days.
 
     # rbenv rehash
@@ -202,8 +202,8 @@ probably a better idea to always load the plugin instead.
 - Update to `ohmyzsh/ohmyzsh`.
 - Implement the [Zsh Plugin Standard](#Zsh-Plugin-Standard).
 - Add `zgenom clean` to remove all unused plugins.
-- Add `zgenom autoupdate` to check for updates periodically and optionally
-  dispatch it to the background to remove any waiting times.
+- Add `zgenom autoupdate` to check for updates periodically and dispatch it to
+  the background to remove any waiting times.
 
 ## Usage
 
@@ -435,33 +435,18 @@ zgenom autoupdate --plugin 7
 # Update plugins every 7 days and zgenom every 14 days
 zgenom autoupdate --plugin 7 --self 14
 
+# Update every 7 days and run updates in the current shell
+zgenom autoupdate --no-background
+
 if ! zgenom saved; then
     # load plugins
 ```
 
-Call `zgenom selfupdate` and `zgenom update` regularly. If you call one of them
-manually this will also reset the timer. So you can use it to make sure you
-update every x days.
+Call `zgenom selfupdate` and `zgenom update` regularly. If you call one of
+those manually this will also reset the timer. So you can use it to make sure
+you update every x days.
 
 Make sure to call it before you check for the init file with `zgenom saved`.
-
-**Note:** Using `zgenom autoupdate` increases the startup time around 17%
-(~16ms) in order to check if an update has to be done. This figure may vary
-depending on your plugins and machine. Use `--background` to remove the waiting
-time.
-
-#### Run updates automatically in the background
-
-```zsh
-source path/to/zgenom.zsh
-
-# Just append `--background` to the `zgenom autoupdate` call.
-# E.g.: Update every 7 days without ever having to wait for plugins to be updated.
-zgenom autoupdate --background
-
-if ! zgenom saved; then
-    # load plugins
-```
 
 These backups will run fully in the background so you won't any slowdown
 in your startup time. When the update is complete and you start a new
@@ -469,10 +454,16 @@ shell everything is prepared so you don't have to wait then either. When
 starting a new shell after a completed update you will get a log showing you
 what happened in the background.
 
+There is also an option to run the updates in sync by adding `--no-background`.
+This will show you any output as it happens and you have to wait until you can
+use the shell.  
+This also increases the startup time around 17% (~16ms) in order
+to check if an update has to be done. This figure may vary depending on your
+plugins and machine.
+
 **Note:** If your .zshrc contains any interactive prompts you might encounter
-issues with some terminals. In my tests `neovim`s builtin terminal emulator
-wouldn't render the message but would wait for the input (and behave
-correctly).
+issues with some terminals. In this case you might want to try running the
+updates in sync using `--no-background`.
 
 #### Clean zgenom plugins
 

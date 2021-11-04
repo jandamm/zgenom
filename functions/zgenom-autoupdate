@@ -29,8 +29,8 @@ function zgenom-autoupdate() {
     #       would result in errors not shown in the executing shell but in the
     #       backgrounded shell.
     #       That's why I decided not to keep it this way.
-    local self plugin verbose background omz
-    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -background=background -keep-ohmyzsh=omz || return
+    local self plugin verbose nobg omz deprecated
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -no-background=nobg -keep-ohmyzsh=omz -background=deprecated || return
 
     if [[ -z $omz ]]; then
         : ${DISABLE_AUTO_UPDATE:=true}
@@ -53,7 +53,7 @@ function zgenom-autoupdate() {
     fi
     verbose=${verbose:-$ZGENOM_AUTOUPDATE_VERBOSE}
 
-    if [[ -n  $background ]]; then
+    if [[ -z $nobg ]]; then
         function __zgenom_autoupdate_background() {
             add-zsh-hook -d precmd __zgenom_autoupdate_background
             unfunction __zgenom_autoupdate_background

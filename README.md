@@ -112,6 +112,8 @@ if ! zgenom saved; then
     # plugins
     zgenom ohmyzsh plugins/git
     zgenom ohmyzsh plugins/sudo
+    # just load the completions
+    zgenom ohmyzsh plugins/docker-compose --completion
 
     # Install ohmyzsh osx plugin if on macOS
     [[ "$(uname -s)" = Darwin ]] && zgenom ohmyzsh plugins/osx
@@ -204,6 +206,8 @@ probably a better idea to always load the plugin instead.
 - Add `zgenom clean` to remove all unused plugins.
 - Add `zgenom autoupdate` to check for updates periodically and dispatch it to
   the background to remove any waiting times.
+- Allow just adding a plugins directory to fpath using `--completion` with
+  `load` or `ohmyzsh`.
 
 ## Usage
 
@@ -235,6 +239,9 @@ zgenom ohmyzsh
 zgenom ohmyzsh plugins/git
 zgenom ohmyzsh plugins/sudo
 zgenom ohmyzsh plugins/command-not-found
+# Just use the completions in this directory
+zgenom ohmyzsh plugins/docker-compose --completion
+
 zgenom ohmyzsh themes/arrow
 ```
 
@@ -311,11 +318,12 @@ information.](https://github.com/jandamm/zgenom/issues/48#issuecomment-763740949
 #### Load plugins and completions
 
 ```zsh
-zgenom load <repo> [location] [branch]
+zgenom load <repo> [location] [branch] [--completion]
 ```
 
 Zgenom tries to source any scripts from `location` using a "very smart matching
 logic". It will also append `location` to `$fpath`.
+If you add `--completion` it will only append `location` to `fpath`.
 
 - `repo`
   - github `user/repository` or path to a repository
@@ -331,6 +339,8 @@ logic". It will also append `location` to `$fpath`.
   - useful for repositories that don't have proper plugin
 - `branch`
   - specifies the git branch to use
+- `--completion`
+  - Don't source any file. Just add the given location to `$fpath`
 
 #### Load executables
 

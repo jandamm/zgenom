@@ -32,6 +32,18 @@ function __zgenom_source() {
     fi
 }
 
+function __zgenom_completion() {
+    if [[ -d $location ]]; then
+        __zgenom_add_to_fpath $location
+    elif [[ -f $location && -d "${location:h}" ]]; then
+        __zgenom_add_to_fpath "${location:h}"
+    elif [[ -n $repo ]]; then
+        __zgenom_err "Failed to find '$file' in '$repo'. Couldn't add completion"
+    else
+        __zgenom_err "Failed to add completion for ${dir:-$location}"
+    fi
+}
+
 function __zgenom_add_to_fpath() {
     local completion_path="${1}"
 
@@ -43,10 +55,11 @@ function __zgenom_add_to_fpath() {
 }
 
 function zgenom-load() {
-    local location
+    local location completion
+    zparseopts -D -E -completion=completion || return
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`load` requires at least one parameter:'
-        __zgenom_err '`zgenom load <repo> [location] [branch]`'
+        __zgenom_err '`zgenom load <repo> [location] [branch] [--location]`'
         return
     elif [[ "$#" == 1 && ("${1[1]}" == '/' || "${1[1]}" == '.' ) ]]; then
         location="${1}"
@@ -61,8 +74,16 @@ function zgenom-load() {
         zgenom-clone "${repo}" "${branch}"
     fi
 
+    # Don't source, just fpath
+    if [[ -n $completion ]]; then
+        __zgenom_completion
+        # Should bin be added?
+        # Not for now since the bins should probably be only added when the plugin is loaded.
+        # If only the bins should be added `zgenom bin <repo>` can be used instead.
+        return
+
     # source the file
-    if [[ -f "${location}" ]]; then
+    elif [[ -f "${location}" ]]; then
         __zgenom_source "${location}"
 
     # Prezto modules have init.zsh files

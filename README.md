@@ -113,7 +113,7 @@ if ! zgenom saved; then
     zgenom ohmyzsh plugins/git
     zgenom ohmyzsh plugins/sudo
     # just load the completions
-    zgenom ohmyzsh plugins/docker-compose --completion
+    zgenom ohmyzsh --completion plugins/docker-compose
 
     # Install ohmyzsh osx plugin if on macOS
     [[ "$(uname -s)" = Darwin ]] && zgenom ohmyzsh plugins/osx
@@ -240,7 +240,7 @@ zgenom ohmyzsh plugins/git
 zgenom ohmyzsh plugins/sudo
 zgenom ohmyzsh plugins/command-not-found
 # Just use the completions in this directory
-zgenom ohmyzsh plugins/docker-compose --completion
+zgenom ohmyzsh --completion plugins/docker-compose
 
 zgenom ohmyzsh themes/arrow
 ```

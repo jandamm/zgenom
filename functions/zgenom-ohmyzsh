@@ -1,12 +1,14 @@
 #!/usr/bin/env zsh
 
 function zgenom-oh-my-zsh() {
+    local completion
+    zparseopts -D -E -completion=completion || return
     if [[ -z $ZSH ]]; then
         ZSH="$(__zgenom_clone_dir $ZGEN_OH_MY_ZSH_REPO --branch $ZGEN_OH_MY_ZSH_BRANCH)"
     fi
 
     local file="${1:-oh-my-zsh.sh}"
-    zgenom-load "$ZGEN_OH_MY_ZSH_REPO" "${file}" "$ZGEN_OH_MY_ZSH_BRANCH"
+    zgenom-load "$ZGEN_OH_MY_ZSH_REPO" "${file}" "$ZGEN_OH_MY_ZSH_BRANCH" $completion
 }
 
 zgenom-oh-my-zsh $@

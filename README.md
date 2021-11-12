@@ -567,7 +567,7 @@ There's a [zsh-quickstart-kit](https://github.com/unixorn/zsh-quickstart-kit)
 for using zsh and zgenom that does a guided setup of zgenom, including
 installing a starting sampler of useful plugins.
 
-### [Zsh Plugin Standard](https://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html)
+### [Zsh Plugin Standard](https://zdharma-continuum.github.io/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html)
 
 The Zsh Plugin Standard describes how a plugin for zsh should be written and
 what the plugin manager should do to support a plugin.
@@ -585,7 +585,7 @@ I personally wouldn't want this so this is off by default. Please set
 
 - [antigen](https://github.com/zsh-users/antigen) - popular and mature
 - [zplug](https://github.com/b4b4r07/zplug) - well performing and has a fancy UI
-- [zinit](https://github.com/zdharma/zinit) - very much magic and a turbo mode
+- [zinit](https://github.com/zdharma-continuum/zinit) - very much magic and a turbo mode
 
 ## Feedback
 

@@ -64,6 +64,7 @@ function _zgenom() {
             local subcmd=$words[2]
             case $subcmd in
                 compile) _files;;
+                list) _values -w options '--bin[list bins]' '--init[show init file]';;
                 selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
                 load|ohmyzsh) _values -w options "--completion[only add to fpath]";;
                 *) functions _zgenom_$subcmd &> /dev/null && _zgenom_$subcmd "$@";;

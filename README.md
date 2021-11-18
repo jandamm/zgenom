@@ -345,7 +345,7 @@ If you add `--completion` it will only append `location` to `fpath`.
 #### Load executables
 
 ```zsh
-zgenom load <repo> [location] [branch] [name]
+zgenom bin <repo> [location] [branch] [name]
 ```
 
 If `location` is omitted `./bin` is checked if `./bin` doesn't exist `.` is
@@ -354,7 +354,7 @@ checked. All executables in the found folder will be added to the path.
 If `location` is a folder all executables of this folder are added to the path.
 
 **Note:** This may lead to unwanted side-effects so it's recommended that you
-specify the files you need. You can use `zgenom list bin` to check which
+specify the files you need. You can use `zgenom list --bin` to check which
 executables are added.
 
 ```zsh

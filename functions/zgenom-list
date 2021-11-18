@@ -1,13 +1,20 @@
 #!/usr/bin/env zsh
 
 function zgenom-list() {
-    if [[ $1 = 'bin' ]]; then
+    local bin init
+    zparseopts -D -E -bin=bin -init=init || return
+
+    if [[ -n $bin ]]; then
         ls $ZGENOM_SOURCE_BIN
-    elif [[ -f "${ZGEN_INIT}" ]]; then
-        cat "${ZGEN_INIT}"
-    else
-        __zgenom_err '`init.zsh` missing, please use `zgenom save` and then restart your shell.'
-        return 1
+    fi
+
+    if [[ -z $bin || -n $init ]]; then
+        if [[ -f "${ZGEN_INIT}" ]]; then
+            cat "${ZGEN_INIT}"
+        else
+            __zgenom_err '`init.zsh` missing, please use `zgenom save` and then restart your shell.'
+            return 1
+        fi
     fi
 }
 

@@ -142,6 +142,9 @@ if ! zgenom saved; then
 EOPLUGINS
     # ^ can't indent this EOPLUGINS
 
+    # add binaries
+    zgenom bin tj/git-extras
+
     # completions
     zgenom load zsh-users/zsh-completions
 
@@ -345,7 +348,7 @@ If you add `--completion` it will only append `location` to `fpath`.
 #### Load executables
 
 ```zsh
-zgenom bin <repo> [location] [branch] [name]
+zgenom bin <repo> --location --branch --name --glob
 ```
 
 If `location` is omitted `./bin` is checked if `./bin` doesn't exist `.` is
@@ -353,14 +356,19 @@ checked. All executables in the found folder will be added to the path.
 
 If `location` is a folder all executables of this folder are added to the path.
 
+It's also possible to provide a glob where every matching executable is added
+to the path.
+
 **Note:** This may lead to unwanted side-effects so it's recommended that you
 specify the files you need. You can use `zgenom list --bin` to check which
 executables are added.
 
 ```zsh
 # Add 'fasd' to the path and rename it to 'fast'.
-# Also use and follow the default branch.
-zgenom bin 'clvv/fasd' fasd ___ fast
+zgenom bin 'clvv/fasd' --location fasd --name fast
+
+# Add all executables which are in bin, start with git- and end with -branch.
+zgenom bin 'tj/git-extras' --glob 'bin/git-*-branch'
 ```
 
 #### Bulk load plugins

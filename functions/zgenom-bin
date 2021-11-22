@@ -7,21 +7,33 @@ function __zgenom_bin() {
     if [[ ! -e $destination ]] ln -s $file $destination
 }
 
+function __zgenom_bins() {
+    setopt localoptions nullglob
+    for file in $~1(*); do
+        __zgenom_bin "$file"
+    done
+}
+
 function zgenom-bin() {
+    local location branch name glob
+    zparseopts -D -E -location:=location -branch:=branch -name:=name -glob:=glob || return
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`bin` requires at least one parameter:'
-        __zgenom_err '`zgenom bin <repo> [location] [branch] [name]`'
+        __zgenom_err '`zgenom bin <repo>`'
+        __zgenom_err '--location, --branch, --name, --glob'
         return
     fi
-    local repo="${1}"
-    local location="${2%/}"
-    local branch="${3}"
-    local name="${4}"
+    local repo="$1"
+    location="${${location[2]:-$2}%/}"
+    branch="${branch[2]:-$3}"
+    name="${name[2]:-$4}"
     local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
 
     zgenom-clone "${repo}" "${branch}"
 
     if [[ ! -d $ZGENOM_SOURCE_BIN ]] mkdir -p $ZGENOM_SOURCE_BIN
+
+    if [[ -n $glob ]] __zgenom_bins "$dir/${glob[2]}"
 
     if [[ -n $location ]]; then
         location="${dir}/${location}"
@@ -29,18 +41,16 @@ function zgenom-bin() {
             __zgenom_bin "${location}" $name
             return
         fi
-    elif [[ -d "${dir}/bin" ]]; then
-        location="${dir}/bin"
+    elif [[ -n $glob ]]; then
+        # Stop is glob is used and no location is provided
+        return
+    elif [[ -d "$dir/bin" ]]; then
+        location="$dir/bin"
     else
-        location="${dir}"
+        location="$dir"
     fi
 
-    setopt localoptions nullglob
-    for file in ${location}/*; do
-        if [[ -x $file ]]; then
-            __zgenom_bin "$file"
-        fi
-    done
+    __zgenom_bins "$location/*"
 }
 
 zgenom-bin $@

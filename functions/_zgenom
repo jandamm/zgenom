@@ -48,6 +48,17 @@ function _zgenom_autoupdate() {
     fi
 }
 
+function _zgenom_bin() {
+    if [[ $words[-2] =~ '--'* ]] return
+    local options=(
+        '--location[file or folder to add]'
+        '--branch[define git branch]'
+        '--name[define name (only when location is a file)]'
+        '--glob[everything matching the glob will be added]'
+    )
+    _values -w options $options
+}
+
 function _zgenom() {
     _arguments '1: :->cmd' '*: :->opts'
 

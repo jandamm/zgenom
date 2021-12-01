@@ -560,6 +560,8 @@ Existing extensions:
 
 - [release](https://github.com/jandamm/zgenom-ext-release): Use `zgenom` and
   `gh` to download github releases.
+- [eval](https://github.com/jandamm/zgenom-ext-eval): Use `zgenom` to quickly
+  generate plugins from a command or heredoc.
 
 Please create a PR to add your extension here :)
 

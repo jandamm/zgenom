@@ -558,10 +558,12 @@ called when the prompt starts with `zgenom abc`.
 
 Existing extensions:
 
-- [release](https://github.com/jandamm/zgenom-ext-release): Use `zgenom` and
-  `gh` to download github releases.
 - [eval](https://github.com/jandamm/zgenom-ext-eval): Use `zgenom` to quickly
   generate plugins from a command or heredoc.
+- [release](https://github.com/jandamm/zgenom-ext-release): Use `zgenom` and
+  `gh` to download github releases.
+- [run](https://github.com/jandamm/zgenom-ext-run): Use `zgenom` to run
+  commands in the plugin folder (e.g. `make`).
 
 Please create a PR to add your extension here :)
 

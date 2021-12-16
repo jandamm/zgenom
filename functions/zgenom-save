@@ -89,6 +89,9 @@ function zgenom-save() {
         __zgenom_write '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
+    __zgenom_write
+    __zgenom_write 'if [[ -n $_ZGENOM_COMPDEFS ]] __zgenom_compdef'
+
     if [[ -d $ZGENOM_SOURCE_BIN ]]; then
         __zgenom_write
         __zgenom_write "# ### Bins"

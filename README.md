@@ -93,6 +93,9 @@ source "${HOME}/.zgenom/zgenom.zsh"
 # This does not increase the startup time.
 zgenom autoupdate
 
+# Add this if you experience issues with missing completions or errors mentioning compdef.
+# zgenom compdef
+
 # if the init script doesn't exist
 if ! zgenom saved; then
     echo "Creating a zgenom save"
@@ -482,6 +485,24 @@ plugins and machine.
 **Note:** If your .zshrc contains any interactive prompts you might encounter
 issues with some terminals. In this case you might want to try running the
 updates in sync using `--no-background`.
+
+#### Fix issues with compdef
+
+```zsh
+source "${HOME}/.zgenom/zgenom.zsh"
+
+zgenom compdef
+
+if ! zgenom saved; then
+  ...
+
+```
+
+`compdef` is only available after `compinit` is called which zgenom executes
+after all plugins are loaded.  
+Some plugins might use compdef and either error or fail to add completions.
+Running `zgenom compdef` will wrap `compdef` and apply all calls after compinit
+was done.
 
 #### Clean zgenom plugins
 

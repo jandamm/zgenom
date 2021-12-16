@@ -8,6 +8,8 @@ function zgenom-apply() {
             eval "compinit $ZGEN_COMPINIT_FLAGS"
     fi
 
+    if [[ -n $_ZGENOM_COMPDEFS ]] __zgenom_compdef
+
     if [[ ${ZGENOM_ADD_PATH} == 1 ]] && [[ -d $ZGENOM_SOURCE_BIN ]]; then
         path=($ZGENOM_SOURCE_BIN $path)
     fi

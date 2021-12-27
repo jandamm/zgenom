@@ -1,10 +1,12 @@
 #!/usr/bin/env zsh
 
 # Autoload all functions
-setopt localoptions extendedglob
-for func in $ZGEN_SOURCE/functions/(__|)zgenom(-|_)*~*.zwc; do
-    autoload -Uz ${func:t}
-done
+(){
+    setopt localoptions extendedglob
+    for func in $ZGEN_SOURCE/functions/(__|)zgenom(-|_)*~*.zwc; do
+        autoload -Uz ${func:t}
+    done
+}
 
 # Set all options
 source "$ZGEN_SOURCE/options.zsh"

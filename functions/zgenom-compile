@@ -15,9 +15,7 @@ function zgenom-compile() {
     elif [ -f $inp ]; then
         __zgenom_compile $inp
     else
-        setopt localoptions nullglob
-        for file in $inp/**/*
-        do
+        for file in $inp/**/*(DN); do
             # only files and ignore compiled files
             if [ ! -f $file ] || [[ $file = *.zwc ]]; then
                 continue

@@ -8,7 +8,7 @@ function __zgenom_compile() {
 
 function zgenom-compile() {
     local opts=()
-    zparseopts -a opts -D -- U k z R M || return
+    zparseopts -a opts -D -- M R U k z || return
     local file=$1
     if [ -z $file ]; then
         __zgenom_err '`compile` requires one parameter:'

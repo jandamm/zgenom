@@ -59,6 +59,18 @@ function _zgenom_bin() {
     _values -w options $options
 }
 
+function _zgenom_compile() {
+    local options=(
+        '-M[mark as mapped]'
+        '-R[mark as read]'
+        "-U[don't expand aliases]"
+        '-k[ksh-style autoloading]'
+        '-z[zsh-style autoloading]'
+    )
+    _values -w options $options
+    _files
+}
+
 function _zgenom() {
     _arguments '1: :->cmd' '*: :->opts'
 
@@ -74,7 +86,6 @@ function _zgenom() {
         opts)
             local subcmd=$words[2]
             case $subcmd in
-                compile) _files;;
                 list) _values -w options '--bin[list bins]' '--init[show init file]';;
                 selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
                 load|ohmyzsh) _values -w options "--completion[only add to fpath]";;

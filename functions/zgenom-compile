@@ -1,21 +1,22 @@
 #!/usr/bin/env zsh
 
 function __zgenom_compile() {
-    local file=$1
-    if [ ! $file.zwc -nt $file ] && [[ -r $file ]]; then
-        zcompile -U $file
+    if [ $file -nt $file.zwc ] && [[ -r $file ]]; then
+        zcompile $opts $file
     fi
 }
 
 function zgenom-compile() {
-    local inp=$1
-    if [ -z $inp ]; then
+    local opts=()
+    zparseopts -a opts -D -- U k z R M || return
+    local file=$1
+    if [ -z $file ]; then
         __zgenom_err '`compile` requires one parameter:'
         __zgenom_err '`zgenom compile <location>`'
-    elif [ -f $inp ]; then
-        __zgenom_compile $inp
+    elif [ -f $file ]; then
+        __zgenom_compile
     else
-        for file in $inp/**/*(DN); do
+        for file in $file/**/*(DN); do
             # only files and ignore compiled files
             if [ ! -f $file ] || [[ $file = *.zwc ]]; then
                 continue
@@ -39,7 +40,7 @@ function zgenom-compile() {
                 fi
             fi
 
-            __zgenom_compile $file
+            __zgenom_compile
         done
     fi
 }

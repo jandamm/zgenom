@@ -111,21 +111,21 @@ function zgenom-save() {
     zgenom-apply
 
     __zgenom_err "Compiling files ..."
-    zgenom-compile $ZGEN_SOURCE
+    zgenom-compile -U $ZGEN_SOURCE
     if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then
         # Compile ZGEN_DIR if not subdirectory of ZGEN_SOURCE
-        zgenom-compile $ZGEN_DIR
+        zgenom-compile -U $ZGEN_DIR
     fi
 
     if [[ -n $ZGEN_CUSTOM_COMPDUMP ]]; then
-        zgenom-compile $ZGEN_CUSTOM_COMPDUMP
+        zgenom-compile -U $ZGEN_CUSTOM_COMPDUMP
     else
         setopt localoptions nullglob
         for compdump in $HOME/.zcompdump*; do
             if [[ $compdump = *.zwc ]] || [[ ! -r $compdump ]]; then
                 continue
             fi
-            zgenom-compile $compdump
+            zgenom-compile -U $compdump
         done
     fi
 }

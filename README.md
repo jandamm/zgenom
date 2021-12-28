@@ -514,6 +514,9 @@ zsh file it can recursively find in `~/.zsh`. You might not want to add any of
 these lines to your `.zsrhc` but run them manually or automatically in the
 background.
 
+You can provide the options `-UzkMR` to `zgenom compile`. They are just passed
+to `zcompile`. See `man zshbuiltins` for an explanation of the flags.
+
 #### Safely access internal api
 
 Calling any function matching `__zgenom-*` is assumed unsafe and the function

@@ -93,12 +93,12 @@ source "${HOME}/.zgenom/zgenom.zsh"
 # This does not increase the startup time.
 zgenom autoupdate
 
-# Add this if you experience issues with missing completions or errors mentioning compdef.
-# zgenom compdef
-
 # if the init script doesn't exist
 if ! zgenom saved; then
     echo "Creating a zgenom save"
+
+    # Add this if you experience issues with missing completions or errors mentioning compdef.
+    # zgenom compdef
 
     # Ohmyzsh base library
     zgenom ohmyzsh
@@ -489,13 +489,7 @@ updates in sync using `--no-background`.
 #### Fix issues with compdef
 
 ```zsh
-source "${HOME}/.zgenom/zgenom.zsh"
-
 zgenom compdef
-
-if ! zgenom saved; then
-  ...
-
 ```
 
 `compdef` is only available after `compinit` is called which zgenom executes

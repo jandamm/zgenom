@@ -1,18 +1,19 @@
 #!/usr/bin/env zsh
 
-if ! typeset -f compdef >/dev/null; then
+if ! typeset -f compdef &>/dev/null; then
+    _ZGENOM_COMPDEF=1
     _ZGENOM_COMPDEFS=()
+
     function compdef() {
         _ZGENOM_COMPDEFS+=("$*")
     }
 
-    function __zgenom_compdef() {
+    function __zgenom_compdef_apply() {
         local comp
         for comp in $_ZGENOM_COMPDEFS; do eval "compdef $comp"; done
-        unset _ZGENOM_COMPDEFS
+        unset _ZGENOM_COMPDEF _ZGENOM_COMPDEFS
+        unfunction __zgenom_compdef_apply
     }
-else
-    function __zgenom_compdef() {}
 fi
 
 # Ensure running once

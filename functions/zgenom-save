@@ -48,6 +48,12 @@ function zgenom-save() {
     __zgenom_write
     __zgenom_write "export PMSPEC=$PMSPEC"
     __zgenom_write "export ZPFX=${(q)ZPFX}"
+
+    if [[ -n $_ZGENOM_COMPDEF ]]; then
+        __zgenom_write
+        __zgenom_write 'autoload -Uz zgenom-compdef && zgenom-compdef'
+    fi
+
     __zgenom_write
     __zgenom_write "ZGENOM_PLUGINS=(${(@qOa)ZGENOM_PLUGINS})"
     if [[ -n $ZSH ]]; then
@@ -89,8 +95,10 @@ function zgenom-save() {
         __zgenom_write '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
-    __zgenom_write
-    __zgenom_write 'if [[ -n $_ZGENOM_COMPDEFS ]] __zgenom_compdef'
+    if [[ -n $_ZGENOM_COMPDEF ]]; then
+        __zgenom_write
+        __zgenom_write '__zgenom_compdef_apply'
+    fi
 
     if [[ -d $ZGENOM_SOURCE_BIN ]]; then
         __zgenom_write

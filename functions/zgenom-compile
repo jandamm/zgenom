@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 function __zgenom_compile() {
-    if [ $file -nt $file.zwc ] && [[ -r $file ]]; then
+    if [[ ! -f $file.zwc || $file -nt $file.zwc ]] && [[ -r $file ]]; then
         zcompile $opts $file
     fi
 }

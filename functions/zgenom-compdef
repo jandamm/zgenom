@@ -16,5 +16,7 @@ if ! typeset -f compdef &>/dev/null; then
     }
 fi
 
-# Ensure running once
-function zgenom-compdef() {}
+function zgenom-compdef() {
+    __zgenom_err 'Only call zgenom compdef once.'
+    return 1
+}

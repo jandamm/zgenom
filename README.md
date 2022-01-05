@@ -494,9 +494,10 @@ zgenom compdef
 
 `compdef` is only available after `compinit` is called which zgenom executes
 after all plugins are loaded.  
-Some plugins might use compdef and either error or fail to add completions.
-Running `zgenom compdef` will wrap `compdef` and apply all calls after compinit
-was done.
+Some plugins might use `compdef` and either error or fail to add completions
+(if they check the existence of `compdef`).
+Running `zgenom compdef` will provide a `compdef` and apply all calls after
+compinit was done.
 
 #### Clean zgenom plugins
 

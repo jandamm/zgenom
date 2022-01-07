@@ -25,7 +25,7 @@ function __zgenom_migrate_dir() {
     local dir="${1}"
     local repo="${2}"
     local branch="${3}"
-    command mkdir -p ${dir:h} && command mv $(__zgenom_clone_dir ${repo} --branch ${branch} --legacy) $dir
+    command mkdir -p ${dir:h} && command mv "$(__zgenom_clone_dir ${repo} --branch ${branch} --legacy)" $dir
 }
 
 function zgenom-clone() {

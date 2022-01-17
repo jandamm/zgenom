@@ -97,6 +97,9 @@ zgenom autoupdate
 if ! zgenom saved; then
     echo "Creating a zgenom save"
 
+    # Add this if you experience issues with missing completions or errors mentioning compdef.
+    # zgenom compdef
+
     # Ohmyzsh base library
     zgenom ohmyzsh
 
@@ -482,6 +485,19 @@ plugins and machine.
 **Note:** If your .zshrc contains any interactive prompts you might encounter
 issues with some terminals. In this case you might want to try running the
 updates in sync using `--no-background`.
+
+#### Fix issues with compdef
+
+```zsh
+zgenom compdef
+```
+
+`compdef` is only available after `compinit` is called which zgenom executes
+after all plugins are loaded.  
+Some plugins might use `compdef` and either error or fail to add completions
+(if they check the existence of `compdef`).
+Running `zgenom compdef` will provide a `compdef` and apply all calls after
+compinit was done.
 
 #### Clean zgenom plugins
 

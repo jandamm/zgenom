@@ -4,6 +4,7 @@ autoupdate:^^^^automatically check for updates of zgenom and plugins
 bin:^^^^^^^^^^^clone and add files to PATH
 clean:^^^^^^^^^remove all unused repositories
 clone:^^^^^^^^^clone plugin from repository
+compdef:^^^^^^^add compdef and apply it after compinit
 compile:^^^^^^^compile files from the given path
 help:^^^^^^^^^^print usage information
 init:^^^^^^^^^^source the init.zsh

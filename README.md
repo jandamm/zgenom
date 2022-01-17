@@ -214,6 +214,7 @@ probably a better idea to always load the plugin instead.
   the background to remove any waiting times.
 - Allow just adding a plugins directory to fpath using `--completion` with
   `load` or `ohmyzsh`.
+- Add `zgenom compdef` to add `compdef` before loading plugins.
 
 ## Usage
 

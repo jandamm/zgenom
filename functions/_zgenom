@@ -78,7 +78,7 @@ function _zgenom() {
         cmd)
             local -a commands
             commands=$ZGENOM_EXTENSIONS
-            for line in "${(@f)$(< $ZGEN_SOURCE/commands.txt)}"; do
+            for line in "${(@f)$(< "$ZGEN_SOURCE"/commands.txt)}"; do
                 commands+=( "${line//\^/}" )
             done
             _describe -t commands 'command' commands "$@"

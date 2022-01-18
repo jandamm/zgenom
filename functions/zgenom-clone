@@ -69,9 +69,9 @@ function zgenom-clone() {
     else
         command mkdir -p "${dir}"
         if [[ -n "$branch" ]] && [[ ! "$branch" = '___' ]]; then
-            eval "git clone --depth=1 $submodules -b $branch $url $dir"
+            eval "git clone --depth=1 $submodules -b $branch '$url' '$dir'"
         else
-            eval "git clone --depth=1 $submodules $url $dir"
+            eval "git clone --depth=1 $submodules '$url' '$dir'"
         fi
     fi
 }

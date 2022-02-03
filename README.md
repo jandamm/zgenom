@@ -51,35 +51,7 @@ if ! zgenom saved; then
   zgenom save
 fi
 ```
-
-### Migration from zgen
-
-The quickest way would be to just use a new remote. This way no plugins have to
-be cloned again.
-
-```zsh
-cd $ZGEN_SOURCE
-git remote add zgenom https://github.com/jandamm/zgenom.git
-git fetch zgenom
-git switch main
-zgen reset
-```
-
-When you start a new shell your plugins will be migrated. You don't have to
-change your `.zshrc`.
-
-The preferred way would be to just delete zgen and start fresh.
-
-**Note:** If you keep `~/.zgen` around, zgenom will use it to store the plugins
-in there. So please `rm` or `mv` the folder before starting a new shell.
-(Otherwise the plugins will be migrated - with a prompt)
-
-If you've specified branches (e.g. `main`) you can probably remove those since
-zgenom should take care of picking the right branch for you. Unless you're
-using a "pre-release" branch.
-
-**Note:** While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
-and `oh-my-zsh` can be used interchangeably.
+If you're currently using zgen [see below](#Migration-from-zgen).
 
 </details>
 
@@ -194,6 +166,36 @@ alias brew='unalias brew && zgenom ohmyzsh brew && brew'
 **Note:** The more dynamic examples are not official features. They are rather
 byproducts. They are included as ideas you can test out. In most cases it's
 probably a better idea to always load the plugin instead.
+
+### Migration from zgen
+
+The quickest way would be to just use a new remote. This way no plugins have to
+be cloned again.
+
+```zsh
+cd $ZGEN_SOURCE
+git remote add zgenom https://github.com/jandamm/zgenom.git
+git fetch zgenom
+git switch main
+zgen reset
+```
+
+When you start a new shell your plugins will be migrated. You don't have to
+change your `.zshrc`.
+
+The preferred way would be to just delete zgen and start fresh.
+
+**Note:** If you keep `~/.zgen` around, zgenom will use it to store the plugins
+in there. So please `rm` or `mv` the folder before starting a new shell.
+(Otherwise the plugins will be migrated - with a prompt)
+
+If you've specified branches (e.g. `main`) you can probably remove those since
+zgenom should take care of picking the right branch for you. Unless you're
+using a "pre-release" branch.
+
+**Note:** While this README uses `zgenom` and `ohmyzsh` the old versions `zgen`
+and `oh-my-zsh` can be used interchangeably.
+
 
 ## New features
 

@@ -91,7 +91,7 @@ if ! zgenom saved; then
     zgenom ohmyzsh --completion plugins/docker-compose
 
     # Install ohmyzsh osx plugin if on macOS
-    [[ "$(uname -s)" = Darwin ]] && zgenom ohmyzsh plugins/osx
+    [[ "$(uname -s)" = Darwin ]] && zgenom ohmyzsh plugins/macos
 
     # prezto options
     zgenom prezto editor key-bindings 'emacs'

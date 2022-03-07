@@ -55,19 +55,25 @@ function __zgenom_add_to_fpath() {
 }
 
 function zgenom-load() {
-    local location completion
+    local completion
     zparseopts -D -E -completion=completion || return
+    local location dir
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`load` requires at least one parameter:'
         __zgenom_err '`zgenom load <repo> [location] [branch] [--location]`'
         return
     elif [[ "$#" == 1 && ("${1[1]}" == '/' || "${1[1]}" == '.' ) ]]; then
         location="${1}"
+        if [[ -d "$location" ]]; then
+            dir="$location"
+        else
+            dir="${location:h}"
+        fi
     else
         local repo="${1}"
         local file="${2}"
         local branch="${3}"
-        local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
+        dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
         location="${dir}/${file}"
         location=${location%/}
 

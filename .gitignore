@@ -6,3 +6,10 @@ bin
 polaris/*
 sources
 .last_autoupdate_log
+
+.zgen_plugin_lastupdate
+.zgen_system_lastupdate
+.zgenom-plugin-lastupdate
+.zgenom-system-lastupdate
+
+init.zsh

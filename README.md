@@ -397,6 +397,8 @@ time we start the shell (or source .zshrc)
 
 If you don't want use a init script call `zgenom apply` after you've loaded all
 plugins. It'll take care of compinit and adding the loaded bins to your PATH.
+The default path of the `.zcompdump` is `$ZGEN_DIR/zcompdump_$ZSH_VERSION`. You
+can change it by setting `$ZGEN_CUSTOM_COMPDUMP`.
 
 #### Remove init script
 

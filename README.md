@@ -152,7 +152,7 @@ fi
 # (Only load chucknorris on weekends)
 if is_weekend; then
     zgenom ohmyzsh plugins/chucknorris
-    # Be aware that this will be loaded dynamically and reduces the startup time.
+    # Be aware that this will be loaded dynamically and increases the startup time.
     # When using `zgenom clean` this plugin might be removed as well (unless it is
     # currently loaded).
 fi

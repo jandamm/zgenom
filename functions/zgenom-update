@@ -55,7 +55,7 @@ function zgenom-update() {
     zparseopts -D -E -no-reset=no_reset
     setopt localoptions extended_glob nullglob
     local repo
-    for repo in $ZGEN_DIR/**/*/.git/; do
+    for repo in $ZGEN_DIR/**/*/.git/(^M); do
         repo="${repo%/.git/}"
         __zgenom_err "Updating '${repo#$ZGEN_DIR/}' ..."
         (cd "${repo}" \

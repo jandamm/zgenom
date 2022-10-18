@@ -53,10 +53,10 @@ function __zgenom_git_pull() {
 function zgenom-update() {
     local no_reset
     zparseopts -D -E -no-reset=no_reset
-    setopt localoptions extended_glob nullglob
+    setopt localoptions extended_glob
     local repo
-    for repo in $ZGEN_DIR/**/*/.git/(^M); do
-        repo="${repo%/.git/}"
+    for repo in $ZGEN_DIR/**/*/.git(/FN^M); do
+        repo="${repo%/.git}"
         __zgenom_err "Updating '${repo#$ZGEN_DIR/}' ..."
         (cd "${repo}" \
             && __zgenom_git_pull \

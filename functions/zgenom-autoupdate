@@ -13,7 +13,7 @@ if [[ -s "$ZGEN_SOURCE/.last_autoupdate_log" ]]; then
         printf '\n%s\n--------\n' 'Last zgenom autoupdate log:'
         printf '%s\n' "${(@f)$(<$ZGEN_SOURCE/.last_autoupdate_log)}"
         printf '--------\n'
-        printf '' > "$ZGEN_SOURCE/.last_autoupdate_log"
+        printf '' >| "$ZGEN_SOURCE/.last_autoupdate_log"
     }
 
     # A precmd hook is needed since some terminals swallow output of shell startup.
@@ -82,7 +82,7 @@ function zgenom-autoupdate() {
                         && printf 'Recreating init.zsh\n\n' \
                         && _ZGENOM_JUST_INIT=1 zsh -c $cmd 2>&1
                 )
-                [[ -n $log ]] && printf '%s\n\n' $log > "$ZGEN_SOURCE/.last_autoupdate_log"
+                [[ -n $log ]] && printf '%s\n\n' $log >| "$ZGEN_SOURCE/.last_autoupdate_log"
             ) &!
         }
 

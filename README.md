@@ -617,6 +617,11 @@ updates (you probably shouldn't use zgenom if your plugin requires this).
 I personally wouldn't want this so this is off by default. Please set
 `ZGENOM_AUTO_ADD_BIN=1` before sourcing `zgenom.zsh` to enable this paragraph.
 
+## Releases
+
+Every commit which is merged into `main` is considered a stable release.
+Every open PR is considered a beta release that I test locally. You're welcome to test it on your machine as well.
+
 ## Alternatives
 
 - [antigen](https://github.com/zsh-users/antigen) - popular and mature

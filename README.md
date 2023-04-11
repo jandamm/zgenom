@@ -131,7 +131,8 @@ EOPLUGINS
 
     # Compile your zsh files
     zgenom compile "$HOME/.zshrc"
-    zgenom compile $ZDOTDIR
+    # Uncomment if you set ZDOTDIR manually
+    # zgenom compile $ZDOTDIR
 
     # You can perform other "time consuming" maintenance tasks here as well.
     # If you use `zgenom autoupdate` you're making sure it gets
@@ -527,7 +528,7 @@ ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
 ```zsh
 zgenom compile .zshrc
 zgenom compile ~/.zsh
-zgenom compile $ZDOTDIR
+zgenom compile $ZDOTDIR # If you set ZDOTDIR manually
 ```
 
 The first will just compile your `.zshrc`. The second one will compile every

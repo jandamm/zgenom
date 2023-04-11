@@ -204,8 +204,8 @@ and `oh-my-zsh` can be used interchangeably.
 - Add `zgenom compile` in case you want to recursively compile your dotfiles (manually).
 - Add `zgenom bin` to add an executable to your `$PATH`.
 - Lazy loading zgenom - only the bare minimum you need for the current shell is loaded.
-- The default `$ZGEN_DIR` is a sources subdirectory where you cloned `zgenom`
-  to (except when you have `~/.zgen` for backwards compatibility).
+- The default `$ZGEN_DIR` is `path/to/zgenom/sources` (except when you have `~/.zgen` for backwards compatibility).
+  So most usecases shouldn't need to modify `$ZGEN_DIR` anymore.
 - Allow cloning without submodules `zgenom clone <repo> --no-submodules`.
 - Full support for non `master` branches (e.g. `main`). This includes following
   a new default branch.

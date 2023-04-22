@@ -184,6 +184,8 @@ zgen reset
 When you start a new shell your plugins will be migrated. You don't have to
 change your `.zshrc`.
 
+**Note:** `zgen` is only present if you source `zgen.zsh`.
+
 The preferred way would be to just delete zgen and start fresh.
 
 **Note:** If you keep `~/.zgen` around, zgenom will use it to store the plugins

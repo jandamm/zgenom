@@ -625,9 +625,16 @@ Every open PR is considered a beta release that I test locally. You're welcome t
 
 ## Alternatives
 
-- [antigen](https://github.com/zsh-users/antigen) - popular and mature
-- [zplug](https://github.com/b4b4r07/zplug) - well performing and has a fancy UI
-- [zinit](https://github.com/zdharma-continuum/zinit) - very much magic and a turbo mode
+There are a lot of alternatives. The most popular is probably [antigen](https://github.com/zsh-users/antigen) but it's only in maintenance mode.
+An extensive list can be found [here](https://github.com/mattmc3/zsh_unplugged#newspaper_roll-current-state).
+
+You should think what features you need from a plugin manager.
+At its purest form it's just `git clone` and `source path/to/plugin/file.zsh`. So nothing you couldn't do yourself.
+
+But there are some subtleties that you might not think of. For example the default branch could change (e.g. `master` to `main`) and keep you from updating the plugin without an error message.
+
+With `zgenom` I don't even think about zsh plugins.
+Every seven days `zgenom` and the plugins get updated automatically. `zgenom` can also detect new plugins and install them automatically as well.
 
 ## Feedback
 

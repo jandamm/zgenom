@@ -29,8 +29,8 @@ function zgenom-autoupdate() {
     #       would result in errors not shown in the executing shell but in the
     #       backgrounded shell.
     #       That's why I decided not to keep it this way.
-    local self plugin verbose nobg omz deprecated
-    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -no-background=nobg -keep-ohmyzsh=omz -background=deprecated || return
+    local self plugin verbose nobg omz deprecated silent
+    zparseopts -D -E -self:=self -plugin:=plugin -verbose=verbose v=verbose -no-background=nobg -keep-ohmyzsh=omz -background=deprecated -silent=silent || return
 
     if [[ -z $omz ]]; then
         : ${DISABLE_AUTO_UPDATE:=true}
@@ -66,6 +66,7 @@ function zgenom-autoupdate() {
             local self=$_ZGENOM_SELF && unset _ZGENOM_SELF
             local plugin=$_ZGENOM_PLUGIN && unset _ZGENOM_PLUGIN
             local verbose=$_ZGENOM_VERBOSE && unset _ZGENOM_VERBOSE
+            local silent=$_ZGENOM_SILENT && unset _ZGENOM_SILENT
 
             # Dispatch update in the background
             (
@@ -82,7 +83,9 @@ function zgenom-autoupdate() {
                         && printf 'Recreating init.zsh\n\n' \
                         && _ZGENOM_JUST_INIT=1 zsh -c $cmd 2>&1
                 )
-                [[ -n $log ]] && printf '%s\n\n' $log >| "$ZGEN_SOURCE/.last_autoupdate_log"
+                if [[ -z $silent && -n $log ]]; then
+                    printf '%s\n\n' $log >| "$ZGEN_SOURCE/.last_autoupdate_log"
+                fi
             ) &!
         }
 
@@ -90,6 +93,7 @@ function zgenom-autoupdate() {
         _ZGENOM_SELF=$self
         _ZGENOM_PLUGIN=$plugin
         _ZGENOM_VERBOSE=$verbose
+        _ZGENOM_SILENT=$silent
 
         # Schedule update right before the first prompt is drawn.
         autoload -Uz add-zsh-hook

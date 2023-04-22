@@ -32,6 +32,7 @@ function _zgenom_autoupdate() {
             '--keep-ohmyzsh[keep ohmyzshs built-in autoupdate enabled]'
             '--self[update zgenom every INT days]'
             '--plugin[update plugins every INT days]'
+            "--silent[don't show the update log of background updates]"
             '--verbose[verbose logging while updating]'
             '-v[verbose logging while updating]'
         )

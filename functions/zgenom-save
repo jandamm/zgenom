@@ -85,7 +85,7 @@ function zgenom-save() {
         for i in {1.."${#ZGEN_LOADED}"}; do
             file="${ZGEN_LOADED[$i]}"
             __zgenom_write "zsh_loaded_plugins+=( ${(qqq)ZGENOM_LOADED[$i]} )"
-            __zgenom_write "ZERO=${(qqq)file} source ${(qqq)file}"
+            __zgenom_write "set -- && ZERO=${(qqq)file} source ${(qqq)file}"
         done
     fi
 

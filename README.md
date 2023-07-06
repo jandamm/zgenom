@@ -1,21 +1,3 @@
-# ⚠️ Update Error
-
-There is currently an issue when trying to update zgenom (`zgenom autoupdate` or `zgenom selfupdate`):
-```
-fatal: bad object refs/remotes/origin/Breaking-Move-zgen-compatibility-into-zgen.zsh.zwc
-error: https://github.com/jandamm/zgenom.git did not send all necessary objects
-```
-
-Please execute the following:
-```zsh
-cd $ZGEN_SOURCE
-rm -f ".git/refs/remotes/origin/Breaking-Move-zgen-compatibility-into-zgen.zsh.zwc"
-git fetch --prune
-git rebase origin/main
-```
-
-Read [this issue/comment](https://github.com/jandamm/zgenom/issues/142#issuecomment-1531274384) for more information.
-
 # zgenom
 
 A lightweight yet powerful plugin manager for Zsh.

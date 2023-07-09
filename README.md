@@ -110,6 +110,10 @@ if ! zgenom saved; then
     zgenom load zsh-users/zsh-syntax-highlighting
     zgenom load /path/to/super-secret-private-plugin
 
+    # use a plugin file
+    # The file must only contain valid parameters for `zgenom load`
+    zgenom loadall < path/to/plugin/file
+
     # bulk load
     zgenom loadall <<EOPLUGINS
         zsh-users/zsh-history-substring-search
@@ -386,6 +390,7 @@ zgenom bin 'tj/git-extras' --glob 'bin/git-*-branch'
 zgenom loadall <plugins>
 ```
 
+You can use it to load plugins listed in a file or provided by heredoc.
 Please see example `.zshrc` for usage.
 
 #### Generate init script

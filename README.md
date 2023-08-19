@@ -4,8 +4,8 @@ A lightweight yet powerful plugin manager for Zsh.
 
 It is a superset of the brilliant [zgen](https://github.com/tarjoilija/zgen).
 Providing more features and bugfixes while being fully backwards compatible.
-Have a look at the [migration guide](#Migration-from-zgen) if you're
-currently using `zgen`. Also have a look at [new features](#New-features) of
+Have a look at the [migration guide](#migration-from-zgen) if you're
+currently using `zgen`. Also have a look at [new features](#new-features) of
 zgenom.
 
 Zgenom provides you simple commands for managing plugins. It installs your
@@ -18,7 +18,7 @@ you add or remove plugins.
 
 Zgenom does have a `zgenom autoupdate` which checks for updates periodically
 without startup penalty or having to wait for the plugins to update. See
-[here](#Run-updates-automatically) for more information.
+[here](#run-updates-automatically) for more information.
 
 ## Installation
 
@@ -38,7 +38,7 @@ source "${HOME}/.zgenom/zgenom.zsh"
 ```
 
 Place the following code after the one above to load ohmyzsh for example, see
-[Example](#Example-zshrc) and [Usage](#Usage) for more details.
+[Example](#example-zshrc) and [Usage](#usage) for more details.
 
 ```zsh
 # if the init script doesn't exist
@@ -51,7 +51,7 @@ if ! zgenom saved; then
   zgenom save
 fi
 ```
-If you're currently using zgen [see below](#Migration-from-zgen).
+If you're currently using zgen [see below](#migration-from-zgen).
 
 </details>
 
@@ -217,7 +217,7 @@ and `oh-my-zsh` can be used interchangeably.
   a new default branch.
 - compinit with custom flags wasn't working properly.
 - Update to `ohmyzsh/ohmyzsh`.
-- Implement the [Zsh Plugin Standard](#Zsh-Plugin-Standard).
+- Implement the [Zsh Plugin Standard](#zsh-plugin-standard).
 - Add `zgenom clean` to remove all unused plugins.
 - Add `zgenom autoupdate` to check for updates periodically and dispatch it to
   the background to remove any waiting times.

@@ -22,7 +22,10 @@ function __zgenom_git_fetch_head() {
 
 function __zgenom_git_pull() {
     if [[ ! "$repo" =~ '-___$' ]]; then
-        git pull --ff-only
+        # Only pull if we are on a branch (i.e. not a pinned commit)
+        if git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null; then
+            git pull --ff-only
+        fi
     else
         local head
         if __zgenom_git_fetch_head && head=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null); then

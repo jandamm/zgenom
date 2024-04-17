@@ -29,15 +29,18 @@ function __zgenom_migrate_dir() {
 }
 
 function zgenom-clone() {
+    local pin submods
+    zparseopts -D -E -pin=pin -no-submodules=submods || return
     local repo="${1}"
+    local branch="${2}"
     local submodules='--recursive'
-    if [[ $2 = '--no-submodules' ]]; then
-        submodules=''
-        shift
-    elif [[ $3 = '--no-submodules' ]]; then
+    if [[ -n $submods ]]; then
         submodules=''
     fi
-    local branch="${2}"
+    if [[ -n $pin && ! $branch =~ ^[0-9a-fA-F]{40}$ ]]; then
+        __zgenom_err 'Using clone with --pin requires a full commit hash as branch'
+        return 1
+    fi
     local url="$(__zgenom_get_clone_url ${repo})"
     local dir="$(__zgenom_clone_dir ${repo} --branch ${branch})"
 
@@ -68,7 +71,7 @@ function zgenom-clone() {
 
     else
         command mkdir -p "${dir}"
-        if [[ "${branch}" =~ ^[0-9a-fA-F]{40}$ ]]; then
+        if [[ -n $pin ]]; then
             git -C "${dir}" init
             git -C "${dir}" remote add origin "${url}"
             git -C "${dir}" fetch --depth 1 origin "${branch}"

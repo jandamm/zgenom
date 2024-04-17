@@ -334,12 +334,14 @@ information.](https://github.com/jandamm/zgenom/issues/48#issuecomment-763740949
 #### Load plugins and completions
 
 ```zsh
-zgenom load <repo> [location] [branch] [--completion]
+zgenom load <repo> [location] [branch] [--completion] [--pin=full_commit_hash]
 ```
 
 Zgenom tries to source any scripts from `location` using a "very smart matching
 logic". It will also append `location` to `$fpath`.
 If you add `--completion` it will only append `location` to `fpath`.
+
+You can use `--pin` with a full commit hash instead of a branch to prevent the repo from updating.
 
 - `repo`
   - github `user/repository` or path to a repository

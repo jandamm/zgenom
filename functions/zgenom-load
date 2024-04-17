@@ -77,10 +77,6 @@ function zgenom-load() {
         location="${dir}/${file}"
         location=${location%/}
 
-        if [[ ! -z "${ZGENOM_LOAD_PRINT_LOCKED}" ]]; then
-            echo zgenom load $repo ${file:-.} $(git -C $dir rev-parse HEAD)
-        fi
-
         zgenom-clone "${repo}" "${branch}" $pin || return
     fi
 

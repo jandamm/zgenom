@@ -55,8 +55,8 @@ function __zgenom_add_to_fpath() {
 }
 
 function zgenom-load() {
-    local completion
-    zparseopts -D -E -completion=completion || return
+    local completion pin
+    zparseopts -D -E -completion=completion -pin=pin || return
     local location dir
     if [[ "$#" == 0 ]]; then
         __zgenom_err '`load` requires at least one parameter:'
@@ -81,7 +81,7 @@ function zgenom-load() {
             echo zgenom load $repo ${file:-.} $(git -C $dir rev-parse HEAD)
         fi
 
-        zgenom-clone "${repo}" "${branch}"
+        zgenom-clone "${repo}" "${branch}" $pin || return
     fi
 
     # Don't source, just fpath

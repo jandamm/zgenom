@@ -89,7 +89,9 @@ function _zgenom() {
             case $subcmd in
                 list) _values -w options '--bin[list bins]' '--init[show init file]';;
                 selfupdate|update) _values -w options "--no-reset[don't remove init.zsh after updating]";;
-                load|ohmyzsh) _values -w options "--completion[only add to fpath]";;
+                load) _values -w options '--completion[only add to fpath]' '--pin[pin to this commit (full hash)]';;
+                clone) _values -w options '--pin[pin to this commit (full hash)]' '--no-submodules[prevent submodules from being cloned]';;
+                ohmyzsh) _values -w options "--completion[only add to fpath]";;
                 *) functions _zgenom_$subcmd &> /dev/null && _zgenom_$subcmd "$@";;
             esac
             ;;

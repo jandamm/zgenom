@@ -351,6 +351,7 @@ You can use `--pin` with a full commit hash instead of a branch to prevent the r
     - `https://*`
     - `http://*`
     - `ssh://*`
+      - Note that repos cloned using SSH can exhibit odd behavior during [autoupdates](#run-updates-automatically) if the associated ssh-key has a passphrase and is not present in an agent.  Observing several `zsh` processes using 100% CPU is a symptom of this.
     - `git@*:*/*`
 - `location`
   - relative path to a script/folder
@@ -492,7 +493,7 @@ what happened in the background.
 
 There is also an option to run the updates in sync by adding `--no-background`.
 This will show you any output as it happens and you have to wait until you can
-use the shell.  
+use the shell.
 This also increases the startup time around 17% (~16ms) in order
 to check if an update has to be done. This figure may vary depending on your
 plugins and machine.
@@ -508,7 +509,7 @@ zgenom compdef
 ```
 
 `compdef` is only available after `compinit` is called which zgenom executes
-after all plugins are loaded.  
+after all plugins are loaded.
 Some plugins might use `compdef` and either error or fail to add completions
 (if they check the existence of `compdef`).
 Running `zgenom compdef` will provide a `compdef` and apply all calls after

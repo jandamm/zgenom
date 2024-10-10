@@ -351,6 +351,7 @@ You can use `--pin` with a full commit hash instead of a branch to prevent the r
     - `https://*`
     - `http://*`
     - `ssh://*`
+      - Note that repos cloned using SSH can exhibit odd behavior during [autoupdates](#run-updates-automatically) if the associated ssh-key has a passphrase and is not present in an agent.  Observing several `zsh` processes using 100% CPU is a symptom of this.
     - `git@*:*/*`
 - `location`
   - relative path to a script/folder

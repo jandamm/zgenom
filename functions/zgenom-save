@@ -60,13 +60,6 @@ function zgenom-save() {
         __zgenom_write
         __zgenom_write "ZSH=${(q)ZSH}"
     fi
-    if [[ ${ZGEN_USE_PREZTO} == 1 && $#ZGEN_PREZTO_OPTIONS -gt 0 ]]; then
-        __zgenom_write
-        __zgenom_write "# ### Prezto initialization"
-        for option in "${ZGEN_PREZTO_OPTIONS[@]}"; do
-            __zgenom_write "${option}"
-        done
-    fi
 
     # Set up fpath, load completions
     # NOTE: This *intentionally* doesn't use ${ZGEN_COMPINIT_FLAGS}; the only
@@ -77,17 +70,9 @@ function zgenom-save() {
         __zgenom_write 'fpath=('"${(@qOa)ZGEN_COMPLETIONS}"' ${fpath})'
     fi
 
-    if [[ $#ZGEN_LOADED -gt 0 ]]; then
-        local i file
-        __zgenom_write
-        __zgenom_write "# ### General modules"
-        __zgenom_write "typeset -ga zsh_loaded_plugins"
-        for i in {1.."${#ZGEN_LOADED}"}; do
-            file="${ZGEN_LOADED[$i]}"
-            __zgenom_write "zsh_loaded_plugins+=( ${(qqq)ZGENOM_LOADED[$i]} )"
-            __zgenom_write "set -- && ZERO=${(qqq)file} source ${(qqq)file}"
-        done
-    fi
+    # write the result of aggregating load and other commands into this string
+    # handles zsh plugins, prezto modules, and prezto options
+    __zgenom_write "${ZGENOM_INIT_BUILDER}"
 
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         __zgenom_write
@@ -104,16 +89,6 @@ function zgenom-save() {
         __zgenom_write
         __zgenom_write "# ### Bins"
         __zgenom_write 'path=('$ZGENOM_SOURCE_BIN' ${path})'
-    fi
-
-    # load prezto modules
-    if [[ ${ZGEN_USE_PREZTO} == 1 ]]; then
-        __zgenom_write
-        __zgenom_write "# ### Prezto modules"
-        printf %s "pmodload" >> "${ZGEN_INIT}"
-        for module in "${ZGEN_PREZTO_LOAD[@]}"; do
-            printf %s " ${module}" >> "${ZGEN_INIT}"
-        done
     fi
 
     __zgenom_write

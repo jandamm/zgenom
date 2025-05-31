@@ -18,8 +18,8 @@ function __zgenom_prezto_option() {
     fi
     local cmd="zstyle ':${module}' $option ${params}"
 
-    # execute in place
-    eval $cmd
+    # execute in place and write to init builder
+    __zgenom_init_cmd "${cmd}"
 
     if [[ ! "${ZGEN_PREZTO_OPTIONS[@]}" =~ "${cmd}" ]]; then
         ZGEN_PREZTO_OPTIONS+=("${cmd}")

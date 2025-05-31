@@ -28,7 +28,7 @@ function __zgenom_source() {
         fi
 
         zsh_loaded_plugins+=( "$repo_id" )
-        set -- && ZERO="${source_file}" source "${source_file}"
+        __zgenom_init_cmd "set -- && ZERO=\"${source_file}\" source \"${source_file}\""
     fi
 }
 

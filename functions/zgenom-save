@@ -70,8 +70,14 @@ function zgenom-save() {
         __zgenom_write 'fpath=('"${(@qOa)ZGEN_COMPLETIONS}"' ${fpath})'
     fi
 
-    # write the result of aggregating load and other commands into this string
-    # handles zsh plugins, prezto modules, and prezto options
+    __zgenom_write
+    __zgenom_write "# ### ZSH Plugins"
+    __zgenom_write "typeset -ga zsh_loaded_plugins"
+
+    # $ZGENOM_INIT_BUILDER contains commands to load the modules loaded with 'zgenom load', 'zgenom prezto',
+    # 'zgenom pmodload', etc.  The init file will contain the exact code we used to load the modules when we called
+    # zgenom directly, and in the same order.  this ensures consistency between environments regardless of whether we
+    # used zgenom load directly or loaded the init file
     __zgenom_write "${ZGENOM_INIT_BUILDER}"
 
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then

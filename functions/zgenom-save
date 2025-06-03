@@ -119,25 +119,27 @@ function zgenom-save() {
     __zgenom_write
     __zgenom_write "# }}}"
 
-    zgenom-apply
+    zgenom-apply # compinit
 
-    __zgenom_err "Compiling files ..."
-    zgenom-compile -U $ZGEN_SOURCE
-    if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then
-        # Compile ZGEN_DIR if not subdirectory of ZGEN_SOURCE
-        zgenom-compile -U $ZGEN_DIR
-    fi
+    if [[ $ZGENOM_ENABLE_COMPILE == 1 ]]; then
+        __zgenom_err "Compiling files ..."
+        zgenom-compile -U $ZGEN_SOURCE
+        if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then
+            # Compile ZGEN_DIR if not subdirectory of ZGEN_SOURCE
+            zgenom-compile -U $ZGEN_DIR
+        fi
 
-    if [[ -n $ZGEN_CUSTOM_COMPDUMP ]]; then
-        zgenom-compile -U $ZGEN_CUSTOM_COMPDUMP
-    else
-        setopt localoptions nullglob
-        for compdump in $HOME/.zcompdump*; do
-            if [[ $compdump = *.zwc ]] || [[ ! -r $compdump ]]; then
-                continue
-            fi
-            zgenom-compile -U $compdump
-        done
+        if [[ -n $ZGEN_CUSTOM_COMPDUMP ]]; then
+            zgenom-compile -U $ZGEN_CUSTOM_COMPDUMP
+        else
+            setopt localoptions nullglob
+            for compdump in $HOME/.zcompdump*; do
+                if [[ $compdump = *.zwc ]] || [[ ! -r $compdump ]]; then
+                    continue
+                fi
+                zgenom-compile -U $compdump
+            done
+        fi
     fi
 }
 

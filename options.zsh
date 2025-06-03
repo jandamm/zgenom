@@ -26,6 +26,11 @@ if [[ -n "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
     ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS}"
 fi
 
+# Allow disabling zsh compilation
+if [[ -z "${ZGENOM_ENABLE_COMPILE}" ]]; then
+    ZGENOM_ENABLE_COMPILE=1
+fi
+
 if [[ -z "${ZGEN_LOADED}" ]]; then
     ZGEN_LOADED=()
 fi

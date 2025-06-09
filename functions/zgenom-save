@@ -5,15 +5,9 @@ function __zgenom_write() {
 }
 
 function zgenom-save() {
-    ## Handle argument parsing
-    # Default values
-    local should_compile=1
-
     # Define and parse options
+    local no_compile
     zparseopts -D -E -no-compile=no_compile
-
-    # If --no-compile is passed, disable compilation
-    (( $#no_compile )) && should_compile=0
 
     __zgenom_err 'Creating `'"${ZGEN_INIT}"'` ...'
 
@@ -131,7 +125,7 @@ function zgenom-save() {
 
     zgenom-apply # compinit
 
-    if (( $should_compile )); then
+    if [[ -z $no_compile ]]; then
         __zgenom_err "Compiling files ..."
         zgenom-compile -U $ZGEN_SOURCE
         if [[ $ZGEN_DIR != $ZGEN_SOURCE ]] && [[ $ZGEN_DIR != $ZGEN_SOURCE/* ]]; then

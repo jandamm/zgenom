@@ -20,8 +20,25 @@ function zgenom-compile() {
         if [ -f $file ]; then
             __zgenom_compile
         else
-            # only files, ignore compiled files and ignore .git folders
-            for file in $file/**/*~*/.git/*~*.zwc(.DN); do
+            # Build pattern for files that require compilation
+            local pattern="$file/**/*"
+
+            # Exclude any dirs (recursively) in this list
+            local exclude_dirs=(.git spec test tests)
+            for dir in $exclude_dirs; do
+              pattern+="~*/$dir/*~*/$dir/**/*"
+            done
+
+            # Include only files, ignore some files by extension
+            local exclude_exts=(db gif json md png rb py xml yml yaml zwc)
+            for ext in $exclude_exts; do
+              pattern+="~*.${ext}"
+            done
+
+            # glob qualifier to match only regular files, include dotfiles, and allow nullglob
+            pattern+='(.DN)'
+
+            for file in ${~pattern}; do
                 # Check *.sh if it can be parsed from zsh
                 if [[ $file = *.sh ]]; then
                     if ! zsh -n $file 2>/dev/null; then

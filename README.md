@@ -399,7 +399,7 @@ Please see example `.zshrc` for usage.
 #### Generate init script
 
 ```zsh
-zgenom save
+zgenom save [--no-compile]
 ```
 
 It is recommended to save the plugin sourcing part to a static init script so
@@ -410,6 +410,8 @@ If you don't want use a init script call `zgenom apply` after you've loaded all
 plugins. It'll take care of compinit and adding the loaded bins to your PATH.
 The default path of the `.zcompdump` is `$ZGEN_DIR/zcompdump_$ZSH_VERSION`. You
 can change it by setting `$ZGEN_CUSTOM_COMPDUMP`.
+
+You can provide `--no-compile` to disable compiling the sources (probably because you want to compile sources yourself).
 
 #### Remove init script
 

@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+# 'initialize' a command by running 'exec' as well as saving it to ZGENOM_INIT_BUILDER
+# string that is used to create the init file
+function __zgenom_init_cmd() {
+  ZGENOM_INIT_BUILDER+="$*"$'\n'
+  eval "$*"
+}
+
+__zgenom_init_cmd $@

@@ -5,7 +5,7 @@ function __zgenom_prezto_load() {
     local cmd="pmodload ${params[@]}"
 
     # execute in place
-    eval $cmd
+    __zgenom_init_cmd $cmd
 
     if [[ ! "${ZGEN_PREZTO[@]}" =~ "${cmd}" ]]; then
         ZGEN_PREZTO_LOAD+=("${params[@]}")

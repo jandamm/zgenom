@@ -273,8 +273,15 @@ This will create a symlink in the `$ZSHDOTDIR` or `$HOME` directory. This is
 needed by prezto.
 
 **Note:** When `zgenom prezto` is used with `zgenom ohmyzsh` together, `prezto`
-should be **put behind** `ohmyzsh`. Or prompt theme from prezto may not display
+should be put **after** `ohmyzsh`. Or the prompt theme from prezto may not display
 as expected.
+
+Example:
+```zsh
+# Correct order
+zgenom ohmyzsh
+zgeonm prezto
+```
 
 #### Load prezto plugins
 

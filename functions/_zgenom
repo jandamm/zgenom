@@ -92,7 +92,7 @@ function _zgenom() {
                 load) _values -w options '--completion[only add to fpath]' '--pin[pin to this commit (full hash)]';;
                 clone) _values -w options '--pin[pin to this commit (full hash)]' '--no-submodules[prevent submodules from being cloned]';;
                 ohmyzsh) _values -w options "--completion[only add to fpath]";;
-                save) _values -w options "--no-compile[disable compilation]
+                save) _values -w options "--no-compile[disable compilation]";;
                 *) functions _zgenom_$subcmd &> /dev/null && _zgenom_$subcmd "$@";;
             esac
             ;;

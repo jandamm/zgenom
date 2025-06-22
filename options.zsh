@@ -38,6 +38,10 @@ if [[ -z "${ZGENOM_PLUGINS}" ]]; then
     ZGENOM_PLUGINS=()
 fi
 
+if [[ -z "${ZGENOM_INIT_BUILDER}" ]]; then
+    ZGENOM_INIT_BUILDER=""
+fi
+
 if [[ -z "${zsh_loaded_plugins}" ]]; then
     typeset -ga zsh_loaded_plugins
 fi

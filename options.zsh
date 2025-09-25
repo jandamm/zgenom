@@ -1,5 +1,5 @@
 # Zsh Plugin Standard (nounset-safe)
-if (( ${ZGENOM_AUTO_ADD_BIN:-1} == 1 )); then
+if (( ${ZGENOM_AUTO_ADD_BIN:-0} == 1 )); then
     export PMSPEC=0fbiPs
 else
     export PMSPEC=0fiPs
@@ -7,12 +7,12 @@ else
 fi
 
 # Provide defaults without tripping on unset variables
-if [[ -z ${ZPFX-} ]]; then
-    export ZPFX="${ZGEN_SOURCE:-${ZGEN_DIR:-$HOME/.zgenom}}/polaris"
+if [[ -z ${ZPFX-} && -n ${ZGEN_SOURCE-} ]]; then
+    export ZPFX="${ZGEN_SOURCE}/polaris"
 fi
 
-if [[ -z ${ZGENOM_SOURCE_BIN-} ]]; then
-    ZGENOM_SOURCE_BIN="${ZGEN_SOURCE:-${ZGEN_DIR:-$HOME/.zgenom}}/bin"
+if [[ -z ${ZGENOM_SOURCE_BIN-} && -n ${ZGEN_SOURCE-} ]]; then
+    ZGENOM_SOURCE_BIN="${ZGEN_SOURCE}/bin"
 fi
 
 # The user can explicitly disable Zgenom attempting to invoke `compinit`, or it
@@ -22,8 +22,9 @@ if (( ${+ZGEN_AUTOLOAD_COMPINIT} == 0 )) && (( ${+_comps} == 0 )); then
 fi
 
 # Custom compdump path; guard references
-: ${ZGEN_DIR:=${ZGEN_DIR:-${ZGEN_SOURCE:-$HOME/.zgenom}}}
-: ${ZGEN_CUSTOM_COMPDUMP:=${ZGEN_DIR}/zcompdump_${ZSH_VERSION}}
+if (( ${+ZGEN_CUSTOM_COMPDUMP} == 0 )) && (( ${+ZGEN_DIR} )); then
+    ZGEN_CUSTOM_COMPDUMP="${ZGEN_DIR}/zcompdump_${ZSH_VERSION}"
+fi
 if [[ -n ${ZGEN_CUSTOM_COMPDUMP-} ]]; then
     ZGEN_COMPINIT_DIR_FLAG="-d ${(q)ZGEN_CUSTOM_COMPDUMP}"
     ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS-}"

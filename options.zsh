@@ -1,81 +1,53 @@
-# Zsh Plugin Standard
-if [[ $ZGENOM_AUTO_ADD_BIN -eq 1 ]]; then
+# Zsh Plugin Standard (nounset-safe)
+if (( ${ZGENOM_AUTO_ADD_BIN:-0} == 1 )); then
     export PMSPEC=0fbiPs
 else
     export PMSPEC=0fiPs
     ZGENOM_AUTO_ADD_BIN=0
 fi
-if [[ -z $ZPFX ]]; then
-    export ZPFX="$ZGEN_SOURCE/polaris"
+
+# Provide defaults without tripping on unset variables
+if [[ -z ${ZPFX-} && -n ${ZGEN_SOURCE-} ]]; then
+    export ZPFX="${ZGEN_SOURCE}/polaris"
 fi
 
-if [[ -z "${ZGENOM_SOURCE_BIN}" ]]; then
-    ZGENOM_SOURCE_BIN="$ZGEN_SOURCE/bin"
+if [[ -z ${ZGENOM_SOURCE_BIN-} && -n ${ZGEN_SOURCE-} ]]; then
+    ZGENOM_SOURCE_BIN="${ZGEN_SOURCE}/bin"
 fi
 
 # The user can explicitly disable Zgenom attempting to invoke `compinit`, or it
-# will be automatically disabled if `compinit` appears to have already been
-# invoked.
-if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
+# will be automatically disabled if it appears to have already been invoked.
+if (( ${+ZGEN_AUTOLOAD_COMPINIT} == 0 )) && (( ${+_comps} == 0 )); then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
-: ${(q)ZGEN_CUSTOM_COMPDUMP:=$ZGEN_DIR/zcompdump_$ZSH_VERSION}
-if [[ -n "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
+# Custom compdump path; guard references
+if (( ${+ZGEN_CUSTOM_COMPDUMP} == 0 )) && (( ${+ZGEN_DIR} )); then
+    ZGEN_CUSTOM_COMPDUMP="${ZGEN_DIR}/zcompdump_${ZSH_VERSION}"
+fi
+if [[ -n ${ZGEN_CUSTOM_COMPDUMP-} ]]; then
     ZGEN_COMPINIT_DIR_FLAG="-d ${(q)ZGEN_CUSTOM_COMPDUMP}"
-    ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS}"
+    ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS-}"
 fi
 
-if [[ -z "${ZGEN_LOADED}" ]]; then
-    ZGEN_LOADED=()
-fi
+# Ensure arrays/scalars exist without expanding unset variables
+: ${ZGEN_LOADED:=()}
+: ${ZGENOM_LOADED:=()}
+: ${ZGENOM_PLUGINS:=()}
+(( ${+zsh_loaded_plugins} )) || typeset -ga zsh_loaded_plugins
+: ${ZGEN_PREZTO_OPTIONS:=()}
+: ${ZGEN_PREZTO_LOAD:=()}
+: ${ZGEN_COMPLETIONS:=()}
+: ${ZGEN_USE_PREZTO:=0}
+: ${ZGEN_PREZTO_LOAD_DEFAULT:=1}
+: ${ZGEN_OH_MY_ZSH_REPO:=ohmyzsh/ohmyzsh}
 
-if [[ -z "${ZGENOM_LOADED}" ]]; then
-    ZGENOM_LOADED=()
-fi
-
-if [[ -z "${ZGENOM_PLUGINS}" ]]; then
-    ZGENOM_PLUGINS=()
-fi
-
-if [[ -z "${zsh_loaded_plugins}" ]]; then
-    typeset -ga zsh_loaded_plugins
-fi
-
-if [[ -z "${ZGEN_PREZTO_OPTIONS}" ]]; then
-    ZGEN_PREZTO_OPTIONS=()
-fi
-
-if [[ -z "${ZGEN_PREZTO_LOAD}" ]]; then
-    ZGEN_PREZTO_LOAD=()
-fi
-
-if [[ -z "${ZGEN_COMPLETIONS}" ]]; then
-    ZGEN_COMPLETIONS=()
-fi
-
-if [[ -z "${ZGEN_USE_PREZTO}" ]]; then
-    ZGEN_USE_PREZTO=0
-fi
-
-if [[ -z "${ZGEN_PREZTO_LOAD_DEFAULT}" ]]; then
-    ZGEN_PREZTO_LOAD_DEFAULT=1
-fi
-
-if [[ -z "${ZGEN_OH_MY_ZSH_REPO}" ]]; then
-    ZGEN_OH_MY_ZSH_REPO=ohmyzsh/ohmyzsh
-fi
-
-if [[ "${ZGEN_OH_MY_ZSH_REPO}" != */* ]]; then
+if [[ ${ZGEN_OH_MY_ZSH_REPO-} != */* ]]; then
     # Even though the default repo is now ohmyzsh most forks still use oh-my-zsh
     ZGEN_OH_MY_ZSH_REPO="${ZGEN_OH_MY_ZSH_REPO}/oh-my-zsh"
 fi
 
-if [[ -z "${ZGEN_PREZTO_REPO}" ]]; then
-    ZGEN_PREZTO_REPO=sorin-ionescu
-fi
-
-if [[ "${ZGEN_PREZTO_REPO}" != */* ]]; then
+: ${ZGEN_PREZTO_REPO:=sorin-ionescu}
+if [[ ${ZGEN_PREZTO_REPO-} != */* ]]; then
     ZGEN_PREZTO_REPO="${ZGEN_PREZTO_REPO}/prezto"
 fi
-
